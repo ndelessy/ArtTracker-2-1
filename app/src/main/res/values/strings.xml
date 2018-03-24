@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Art Tracker</string>
+    <string name="check_it_out">See Artist</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment1">Hello from Map fragment</string>
+    <string name="hello_blank_fragment2">Hello from Quiz fragment</string>
+    <string name="openDrawer">open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
+
+    <string-array name="art_types">
+        <item>Painting</item>
+        <item>Movie</item>
+        <item>Sculpture</item>
+    </string-array>
+</resources>
