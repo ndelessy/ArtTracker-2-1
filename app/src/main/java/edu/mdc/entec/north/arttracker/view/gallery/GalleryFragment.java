@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.mdc.entec.north.arttracker.GalleryContract;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.presenter.GalleryPresenter;
@@ -24,7 +25,8 @@ import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.R;
 
 public class GalleryFragment extends Fragment
-        implements ArtPiecesFragment.OnArtPieceSelectedListener
+        implements GalleryContract.View
+                    , ArtPiecesFragment.OnArtPieceSelectedListener
                     , ConfirmDeleteDialogFragment.OnDeleteConfirmedListener
                     , ArtPiecesByArtistFragment.OnArtPieceByArtistSelectedListener {
 
@@ -34,12 +36,11 @@ public class GalleryFragment extends Fragment
     private static final int SHOWING_ARTIST = 2;
     private static final int SHOWING_ART_PIECE_BY_ARTIST = 3;
 
-    private GalleryPresenter galleryPresenter;
+    private GalleryContract.Presenter galleryPresenter;
 
     //UI state
     private boolean isLandscape;
     private boolean showingList;
-
     private int showing;
 
     private ArtPiece artPieceByArtist;
@@ -60,6 +61,7 @@ public class GalleryFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {//called when orientation changes but not when another tab is pressed
         Log.d(TAG, "-------------------------In the onCreate() method");
+        galleryPresenter = new GalleryPresenter(getContext(), this);
         setRetainInstance(true);
         showingList = true;
         showing = SHOWING_ART_PIECE;
@@ -99,7 +101,7 @@ public class GalleryFragment extends Fragment
         return view;
     }
 
-    public void setGalleryPresenter(GalleryPresenter galleryPresenter) {
+    public void setPresenter(GalleryContract.Presenter galleryPresenter) {
         this.galleryPresenter = galleryPresenter;
     }
 
@@ -352,5 +354,4 @@ public class GalleryFragment extends Fragment
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
-
 }
