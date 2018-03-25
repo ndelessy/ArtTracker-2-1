@@ -1,8 +1,10 @@
 package edu.mdc.entec.north.arttracker.view.gallery;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +19,18 @@ import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 public class ArtPieceByArtistFragment extends Fragment {
     private static final String ART_PIECE = "artPiece";
     private ArtPiece artPiece;
+    private Context context;
 
 
     public ArtPieceByArtistFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     public static ArtPieceByArtistFragment newInstance(ArtPiece artPiece) {
         ArtPieceByArtistFragment fragment = new ArtPieceByArtistFragment();
@@ -53,7 +61,7 @@ public class ArtPieceByArtistFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.large_pic4);
         nameTextView.setText(artPiece.getName());
         yearTextView.setText(Integer.toString(artPiece.getYear()));
-        imageView.setImageResource(artPiece.getPictureID());
+        imageView.setImageResource(artPiece.getPictureID(context));
         descriptionTextView.setText(artPiece.getDescription());
         return view;
     }

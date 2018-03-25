@@ -283,6 +283,7 @@ public class GalleryFragment extends Fragment
 
     private void startFragments() {
         if(isLandscape){
+            Log.d(TAG,"isLandscape...artpiece.size="+ artPieces.size());
             startArtPiecesFragment(artPieces, R.id.container);
             if(showing == SHOWING_ART_PIECE){
                 startArtPieceFragment(artPiece, R.id.container2);
@@ -295,8 +296,10 @@ public class GalleryFragment extends Fragment
             }
         } else { //portrait
             if(showingList){
+                Log.d(TAG,"isPortrait..."+ showingList);
                 startArtPiecesFragment(artPieces, R.id.container);
             } else {
+                Log.d(TAG,"isPortrait..."+ showingList);
                 if(showing == SHOWING_ART_PIECE){
                     startArtPieceFragment(artPiece, R.id.container);
                 } else if(showing == SHOWING_ARTIST){

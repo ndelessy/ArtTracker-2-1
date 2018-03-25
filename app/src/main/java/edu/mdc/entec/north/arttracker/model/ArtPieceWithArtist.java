@@ -3,6 +3,7 @@ package edu.mdc.entec.north.arttracker.model;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -13,7 +14,7 @@ public class ArtPieceWithArtist implements Parcelable {
     private String name;
     private int artistID;
     private int year;
-    private int pictureID;
+    private String pictureID;
     private String description;
     private double latitude;
     private double longitude;
@@ -26,7 +27,7 @@ public class ArtPieceWithArtist implements Parcelable {
     private String details;
 
     public ArtPieceWithArtist(int artPieceID, String name, int artistID,
-                              int year, int pictureID, String description,
+                              int year, String pictureID, String description,
                               double latitude, double longitude, String beaconID,
                               int stars, int ID, String firstName, String lastName, String details) {
         this.artPieceID = artPieceID;
@@ -51,7 +52,7 @@ public class ArtPieceWithArtist implements Parcelable {
         name = in.readString();
         artistID = in.readInt();
         year = in.readInt();
-        pictureID = in.readInt();
+        pictureID = in.readString();
         description = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
@@ -101,8 +102,12 @@ public class ArtPieceWithArtist implements Parcelable {
         return new Artist(ID, firstName, lastName, details);
     }
 
-    public int getPictureID() {
+    public String getPictureID() {
         return pictureID;
+    }
+
+    public int getPictureID(Context c){
+        return c.getResources().getIdentifier("drawable/"+pictureID, null, c.getPackageName());
     }
 
     public String getDescription() {
@@ -121,7 +126,7 @@ public class ArtPieceWithArtist implements Parcelable {
         this.year = year;
     }
 
-    public void setPictureID(int pictureID) {
+    public void setPictureID(String pictureID) {
         this.pictureID = pictureID;
     }
 
@@ -224,7 +229,7 @@ public class ArtPieceWithArtist implements Parcelable {
         parcel.writeString(name);
         parcel.writeInt(artistID);
         parcel.writeInt(year);
-        parcel.writeInt(pictureID);
+        parcel.writeString(pictureID);
         parcel.writeString(description);
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);

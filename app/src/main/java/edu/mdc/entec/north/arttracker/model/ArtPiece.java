@@ -3,6 +3,7 @@ package edu.mdc.entec.north.arttracker.model;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -19,7 +20,7 @@ public class ArtPiece  implements Parcelable{
     private String name;
     private int artistID;
     private int year;
-    private int pictureID;
+    private String pictureID;
     private String description;
     private double latitude;
     private double longitude;
@@ -28,7 +29,7 @@ public class ArtPiece  implements Parcelable{
 
 
 
-    public ArtPiece(@NonNull int artPieceID, String name, int artistID, int year, int pictureID
+    public ArtPiece(@NonNull int artPieceID, String name, int artistID, int year, String pictureID
             , String description, double latitude, double longitude, String beaconID, int stars) {
         this.artPieceID = artPieceID;
         this.name = name;
@@ -48,7 +49,7 @@ public class ArtPiece  implements Parcelable{
         name = in.readString();
         artistID = in.readInt();
         year = in.readInt();
-        pictureID = in.readInt();
+        pictureID = in.readString();
         description = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
@@ -62,7 +63,7 @@ public class ArtPiece  implements Parcelable{
         dest.writeString(name);
         dest.writeInt(artistID);
         dest.writeInt(year);
-        dest.writeInt(pictureID);
+        dest.writeString(pictureID);
         dest.writeString(description);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
@@ -99,7 +100,7 @@ public class ArtPiece  implements Parcelable{
         return year;
     }
 
-    public int getPictureID() {
+    public String getPictureID() {
         return pictureID;
     }
 
@@ -115,8 +116,12 @@ public class ArtPiece  implements Parcelable{
         this.year = year;
     }
 
-    public void setPictureID(int pictureID) {
+    public void setPictureID(String pictureID) {
         this.pictureID = pictureID;
+    }
+
+    public int getPictureID(Context c){
+        return c.getResources().getIdentifier("drawable/"+pictureID, null, c.getPackageName());
     }
 
     public void setDescription(String description) {

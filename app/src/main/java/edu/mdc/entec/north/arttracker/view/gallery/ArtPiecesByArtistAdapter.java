@@ -18,11 +18,13 @@ import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 public class ArtPiecesByArtistAdapter extends RecyclerView.Adapter<ArtPiecesByArtistAdapter.ViewHolder> {
     private List<ArtPiece> artPieces;
     private static final String TAG = "ArtPieceAdapter";
+    private Context context;
     ArtPiecesByArtistFragment.OnArtPieceByArtistSelectedListener mListener;
 
-    public ArtPiecesByArtistAdapter(List<ArtPiece> artPieces, ArtPiecesByArtistFragment.OnArtPieceByArtistSelectedListener mListener) {
+    public ArtPiecesByArtistAdapter(List<ArtPiece> artPieces, ArtPiecesByArtistFragment.OnArtPieceByArtistSelectedListener mListener, Context context) {
         this.artPieces = artPieces;
         this.mListener = mListener;
+        this.context = context;
     }
     // Inflates the row layout and returns a holder
     @Override
@@ -41,7 +43,7 @@ public class ArtPiecesByArtistAdapter extends RecyclerView.Adapter<ArtPiecesByAr
         ArtPiece artPiece = artPieces.get(position);
         holder.nameTextView.setText(artPiece.getName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
-        holder.imageView.setImageResource(artPiece.getPictureID());
+        holder.imageView.setImageResource(artPiece.getPictureID(context));
     }
 
     @Override

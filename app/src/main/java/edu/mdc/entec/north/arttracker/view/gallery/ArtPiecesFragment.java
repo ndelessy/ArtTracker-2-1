@@ -61,7 +61,7 @@ public class ArtPiecesFragment extends Fragment  {
         //Lookup the recyclerview
         recyclerView = view.findViewById(R.id.rv_art_pieces);
         // Create adapter passing in the data
-        adapter = new ArtPiecesAdapter(artPieces, mListener);
+        adapter = new ArtPiecesAdapter(artPieces, mListener, getContext());
         // Attach the adapter to the recyclerview to populate items
         recyclerView.setAdapter(adapter);
         // Set layout manager to position the items

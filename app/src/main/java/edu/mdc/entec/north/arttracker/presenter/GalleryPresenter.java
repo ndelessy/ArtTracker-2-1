@@ -33,7 +33,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     public GalleryPresenter(final Context context, GalleryContract.View galleryView) {
         this.galleryView = galleryView;
 
-        mDb = Room.databaseBuilder(context, AppDatabase.class, "database").build();
+        mDb = AppDatabase.getInstance(context);
         Log.d(TAG, "GalleryPresenter constructed");
     }
 

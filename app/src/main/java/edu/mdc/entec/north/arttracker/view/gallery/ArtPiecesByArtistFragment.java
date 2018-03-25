@@ -26,7 +26,6 @@ public class ArtPiecesByArtistFragment extends Fragment
     private ArtPiecesByArtistAdapter adapter;
     private RecyclerView recyclerView;
     private OnArtPieceByArtistSelectedListener mListener;
-    private Context context;
 
     public ArtPiecesByArtistFragment() {
         // Required empty public constructor
@@ -40,6 +39,8 @@ public class ArtPiecesByArtistFragment extends Fragment
         fragment.setArguments(args);
         return fragment;
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class ArtPiecesByArtistFragment extends Fragment
         //Lookup the recyclerview
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_art_pieces_no_button);
         // Create adapter passing in the data
-        adapter = new ArtPiecesByArtistAdapter(artPieces, mListener);
+        adapter = new ArtPiecesByArtistAdapter(artPieces, mListener, getContext());
         // Attach the adapter to the recyclerview to populate items
         recyclerView.setAdapter(adapter);
         // Set layout manager to position the items
@@ -70,7 +71,6 @@ public class ArtPiecesByArtistFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.context = context;
         Fragment galleryFragment = this.getParentFragment();
         if (galleryFragment instanceof OnArtPieceByArtistSelectedListener) {
             mListener = (OnArtPieceByArtistSelectedListener) galleryFragment;
