@@ -32,9 +32,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
     public GalleryPresenter(final Context context, GalleryContract.View galleryView) {
         this.galleryView = galleryView;
-
         mDb = AppDatabase.getInstance(context);
-        Log.d(TAG, "GalleryPresenter constructed");
     }
 
 
@@ -42,7 +40,6 @@ public class GalleryPresenter implements GalleryContract.Presenter {
     public void setView(GalleryContract.View galleryView) {
         this.galleryView = galleryView;
         galleryView.setPresenter(this);
-        Log.d(TAG, "GalleryPresenter got reference to gallery:"+galleryView);
     }
 
     public void deleteArtPiece(final ArtPieceWithArtist artPiece){
@@ -69,7 +66,6 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
             @Override
             protected void onPostExecute(List<ArtPieceWithArtist> artPieces) {
-                Log.d(TAG, "Got all artPieces, size="+artPieces.size());
                 galleryView.showArtPieces(artPieces);
             }
         }.execute();
