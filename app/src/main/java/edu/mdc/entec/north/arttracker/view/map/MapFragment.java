@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -152,6 +153,9 @@ public class MapFragment extends Fragment
                 TextView snippet = ((TextView) infoWindow.findViewById(R.id.snippet));
                 snippet.setText(marker.getSnippet());
 
+                ImageView imageView = (ImageView) infoWindow.findViewById(R.id.imageView4);
+                imageView.setImageResource( (int) marker.getTag());
+
                 return infoWindow;
             }
         });
@@ -276,7 +280,9 @@ public class MapFragment extends Fragment
                     .title(artPieceWithArtist.getName() + " (" + artPieceWithArtist.getYear() + ")")
                     .snippet(artPieceWithArtist.getFirstName() + " " + artPieceWithArtist.getLastName())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            mMap.addMarker(mo);
+            Marker marker = mMap.addMarker(mo);
+            marker.setTag(artPieceWithArtist.getPictureID(getContext()));
+            marker.showInfoWindow();
         }
     }
 }
