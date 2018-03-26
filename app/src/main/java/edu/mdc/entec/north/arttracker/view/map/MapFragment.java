@@ -273,7 +273,7 @@ public class MapFragment extends Fragment
             LatLng artPiece = new LatLng(artPieceWithArtist.getLatitude(), artPieceWithArtist.getLongitude());
             MarkerOptions mo = new MarkerOptions()
                     .position(artPiece)
-                    .title(artPieceWithArtist.getName())
+                    .title(artPieceWithArtist.getName() + " (" + artPieceWithArtist.getYear() + ")")
                     .snippet(artPieceWithArtist.getFirstName() + " " + artPieceWithArtist.getLastName())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             mMap.addMarker(mo);

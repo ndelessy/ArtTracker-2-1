@@ -185,7 +185,7 @@ implements GetNameDialogFragment.OnGetNameListener {
                 e.printStackTrace();
             }
             Toast toast = Toast.makeText(this, "Hello " + savedUsername + "!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.TOP, 10, 10);
+            toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
             toast.show();
         }
 
