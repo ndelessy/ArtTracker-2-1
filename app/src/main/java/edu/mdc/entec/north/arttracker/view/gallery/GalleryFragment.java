@@ -32,9 +32,9 @@ public class GalleryFragment extends Fragment
 
     private static final String TAG = "--GalleryFragment";
 
-    private static final int SHOWING_ART_PIECE = 1;
-    private static final int SHOWING_ARTIST = 2;
-    private static final int SHOWING_ART_PIECE_BY_ARTIST = 3;
+    public static final int SHOWING_ART_PIECE = 1;
+    public static final int SHOWING_ARTIST = 2;
+    public static final int SHOWING_ART_PIECE_BY_ARTIST = 3;
 
     private GalleryContract.Presenter galleryPresenter;
 
@@ -283,7 +283,6 @@ public class GalleryFragment extends Fragment
 
     private void startFragments() {
         if(isLandscape){
-            Log.d(TAG,"isLandscape...artpiece.size="+ artPieces.size());
             startArtPiecesFragment(artPieces, R.id.container);
             if(showing == SHOWING_ART_PIECE){
                 startArtPieceFragment(artPiece, R.id.container2);
@@ -296,10 +295,8 @@ public class GalleryFragment extends Fragment
             }
         } else { //portrait
             if(showingList){
-                Log.d(TAG,"isPortrait..."+ showingList);
                 startArtPiecesFragment(artPieces, R.id.container);
             } else {
-                Log.d(TAG,"isPortrait..."+ showingList);
                 if(showing == SHOWING_ART_PIECE){
                     startArtPieceFragment(artPiece, R.id.container);
                 } else if(showing == SHOWING_ARTIST){
@@ -356,5 +353,17 @@ public class GalleryFragment extends Fragment
         transaction.addToBackStack("artistFragment");
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
+    }
+
+    public void setShowing(int showing) {
+        this.showing = showing;
+    }
+
+    public void setArtPiece(ArtPieceWithArtist artPiece) {
+        this.artPiece = artPiece;
+    }
+
+    public void setShowingList(boolean showingList) {
+        this.showingList = showingList;
     }
 }

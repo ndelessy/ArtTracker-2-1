@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,15 +42,23 @@ import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.presenter.GalleryPresenter;
 import edu.mdc.entec.north.arttracker.presenter.MapPresenter;
+import edu.mdc.entec.north.arttracker.view.MainActivity;
+import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
+
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.SHOWING_ART_PIECE;
 
 
 public class MapFragment extends Fragment
         implements OnMapReadyCallback
-                    , MapContract.View{
+                    , MapContract.View
+                    , GoogleMap.OnMarkerClickListener
+                    , GoogleMap.OnInfoWindowClickListener {
     private static final String TAG = "MapFragment";
     private static final LatLng mdcLocation = new LatLng(25.8774460, -80.2461949);
     private static final int DEFAULT_ZOOM = 17;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    private List<ArtPieceWithArtist> artPieces;
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -154,12 +164,14 @@ public class MapFragment extends Fragment
                 snippet.setText(marker.getSnippet());
 
                 ImageView imageView = (ImageView) infoWindow.findViewById(R.id.imageView4);
-                imageView.setImageResource( (int) marker.getTag());
+                imageView.setImageResource( ((ArtPieceWithArtist) marker.getTag()).getPictureID(getContext()));
+
 
                 return infoWindow;
             }
         });
 
+        mMap.setOnInfoWindowClickListener(this);
 
 
         // Prompt the user for permission.
@@ -273,6 +285,9 @@ public class MapFragment extends Fragment
 
     @Override
     public void showArtPiecesOnMap(List<ArtPieceWithArtist> artPieces) {
+
+        this.artPieces = artPieces;
+
         for(ArtPieceWithArtist artPieceWithArtist: artPieces) {
             LatLng artPiece = new LatLng(artPieceWithArtist.getLatitude(), artPieceWithArtist.getLongitude());
             MarkerOptions mo = new MarkerOptions()
@@ -281,8 +296,28 @@ public class MapFragment extends Fragment
                     .snippet(artPieceWithArtist.getFirstName() + " " + artPieceWithArtist.getLastName())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             Marker marker = mMap.addMarker(mo);
-            marker.setTag(artPieceWithArtist.getPictureID(getContext()));
+            marker.setTag(artPieceWithArtist);
             marker.showInfoWindow();
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        GalleryFragment galleryFragment = (GalleryFragment) ((MainActivity) getActivity()).getAdapter().getItem(0);
+        galleryFragment.setShowingList(false);
+        galleryFragment.setShowing(SHOWING_ART_PIECE);
+        galleryFragment.setArtPiece((ArtPieceWithArtist) marker.getTag());
+
+        TabLayout tabhost = (TabLayout) getActivity().findViewById(R.id.tabs);
+        tabhost.getTabAt(0).select();
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if(marker.isInfoWindowShown())
+            marker.hideInfoWindow();
+        else
+            marker.showInfoWindow();
+        return true;
     }
 }

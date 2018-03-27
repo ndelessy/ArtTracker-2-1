@@ -316,4 +316,7 @@ implements GetNameDialogFragment.OnGetNameListener {
             super.onBackPressed();
     }
 
+    public ArtFragmentPagerAdapter getAdapter() {
+        return adapter;
+    }
 }
