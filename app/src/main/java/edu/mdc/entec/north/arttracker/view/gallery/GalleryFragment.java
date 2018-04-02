@@ -52,6 +52,18 @@ public class GalleryFragment extends Fragment
     //Ui element
     private ProgressBar progressBar;
 
+    public static Fragment newInstance(boolean showingList, int showing, ArtPieceWithArtist artPiece) {
+        //TODO
+        Log.d("TAG", "artist = " + artPiece);
+        GalleryFragment fragment = new GalleryFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("ART_PIECE", artPiece);
+        args.putInt("SHOWING", showing);
+        args.putBoolean("SHOWING_LIST", showingList);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -61,11 +73,19 @@ public class GalleryFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {//called when orientation changes but not when another tab is pressed
         Log.d(TAG, "-------------------------In the onCreate() method");
+
+        super.onCreate(savedInstanceState);//other nested frags are attached and created
+        if (getArguments() != null) {
+            artPiece = getArguments().getParcelable("ART_PIECE");
+            showingList = getArguments().getBoolean("SHOWING_LIST");
+            showing = getArguments().getInt("SHOWING");
+        } else{
+            showingList = true;
+            showing = SHOWING_ART_PIECE;
+        }
         galleryPresenter = new GalleryPresenter(getContext(), this);
         setRetainInstance(true);
-        showingList = true;
-        showing = SHOWING_ART_PIECE;
-        super.onCreate(savedInstanceState);//other nested frags are attached and created
+
     }
 
     @Override
@@ -174,7 +194,12 @@ public class GalleryFragment extends Fragment
             if (!showingList) {
                 if (showing == SHOWING_ART_PIECE) {
                     getChildFragmentManager().popBackStackImmediate("artPieceFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                     showingList = true;
+                    Fragment fg = getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+                    if(fg == null){
+                        startFragments();
+                    }
                     return true;
                 } else if (showing == SHOWING_ARTIST) {
                     getChildFragmentManager().popBackStackImmediate("artPiecesByArtistFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -261,8 +286,9 @@ public class GalleryFragment extends Fragment
     }
 
     public void showArtPieces(List<ArtPieceWithArtist> artPieces) {
+        Log.d(TAG, "in showArtPieces"+artPieces.size());
         this.artPieces = artPieces;
-        if (artPiece == null)
+        if (artPiece == null && artPieces.size() != 0)
             artPiece = artPieces.get(0);
 
         startFragments();
@@ -295,6 +321,7 @@ public class GalleryFragment extends Fragment
             }
         } else { //portrait
             if(showingList){
+                Log.d(TAG, "Showing list of "+artPieces.size());
                 startArtPiecesFragment(artPieces, R.id.container);
             } else {
                 if(showing == SHOWING_ART_PIECE){
@@ -366,4 +393,6 @@ public class GalleryFragment extends Fragment
     public void setShowingList(boolean showingList) {
         this.showingList = showingList;
     }
+
+
 }

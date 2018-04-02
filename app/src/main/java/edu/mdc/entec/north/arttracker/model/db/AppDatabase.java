@@ -20,7 +20,7 @@ import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.Artist;
 
 
-@Database(entities = {ArtPiece.class, Artist.class}, version = 2)
+@Database(entities = {ArtPiece.class, Artist.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = "--AppDatabase";
     private static final String DATABASE_NAME = "artPieces.db";

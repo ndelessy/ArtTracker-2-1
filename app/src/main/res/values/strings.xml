@@ -10,6 +10,8 @@
     <string name="hello_blank_fragment2">Hello from Quiz fragment</string>
     <string name="openDrawer">open Drawer</string>
     <string name="closeDrawer">Close Drawer</string>
+    <string name="close_to_art_piece_notification">You are near an art piece!</string>
+    <string name="content_notification">Welcome to the Miami Dade College Sculpture Park</string>
 
     <string-array name="art_types">
         <item>Painting</item>

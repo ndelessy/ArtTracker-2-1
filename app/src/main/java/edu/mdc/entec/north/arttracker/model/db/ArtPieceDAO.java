@@ -47,4 +47,8 @@ public interface ArtPieceDAO {
    @Update(onConflict = REPLACE)
    void updateArtPiece(ArtPiece artPiece);
 
+    @Query("SELECT * " +
+            " FROM ArtPiece INNER JOIN Artist ON ArtPiece.artistID = Artist.ID" +
+            " WHERE ArtPiece.beaconMajor = :beaconMajor AND ArtPiece.beaconMinor = :beaconMinor AND ArtPiece.beaconUUID = :beaconUUID")
+    List<ArtPieceWithArtist> findAllArtPiecesCloseTo(String beaconUUID, int beaconMajor, int beaconMinor);
 }

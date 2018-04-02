@@ -66,6 +66,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
             @Override
             protected void onPostExecute(List<ArtPieceWithArtist> artPieces) {
+                Log.d("HERE", "# found " +artPieces.size());
                 galleryView.showArtPieces(artPieces);
             }
         }.execute();

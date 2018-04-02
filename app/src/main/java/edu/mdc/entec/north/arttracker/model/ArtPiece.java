@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
                 parentColumns = "ID",
                 childColumns = "artistID")})
 public class ArtPiece  implements Parcelable{
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     private int artPieceID;
     private String name;
@@ -24,14 +24,16 @@ public class ArtPiece  implements Parcelable{
     private String description;
     private double latitude;
     private double longitude;
-    private String beaconID;
+    private String beaconUUID;
+    private int beaconMajor;
+    private int beaconMinor;
     private int stars;
 
 
-
-    public ArtPiece(@NonNull int artPieceID, String name, int artistID, int year, String pictureID
-            , String description, double latitude, double longitude, String beaconID, int stars) {
-        this.artPieceID = artPieceID;
+    public ArtPiece(String name, int artistID, int year, String pictureID, String description,
+                    double latitude, double longitude,
+                    String beaconUUID, int beaconMajor, int beaconMinor,
+                    int stars) {
         this.name = name;
         this.artistID = artistID;
         this.year = year;
@@ -39,7 +41,9 @@ public class ArtPiece  implements Parcelable{
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.beaconID = beaconID;
+        this.beaconUUID = beaconUUID;
+        this.beaconMajor = beaconMajor;
+        this.beaconMinor = beaconMinor;
         this.stars = stars;
     }
 
@@ -53,7 +57,9 @@ public class ArtPiece  implements Parcelable{
         description = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
-        beaconID = in.readString();
+        beaconUUID = in.readString();
+        beaconMajor = in.readInt();
+        beaconMinor = in.readInt();
         stars = in.readInt();
     }
 
@@ -67,7 +73,9 @@ public class ArtPiece  implements Parcelable{
         dest.writeString(description);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
-        dest.writeString(beaconID);
+        dest.writeString(beaconUUID);
+        dest.writeInt(beaconMajor);
+        dest.writeInt(beaconMinor);
         dest.writeInt(stars);
     }
 
@@ -161,12 +169,29 @@ public class ArtPiece  implements Parcelable{
         this.longitude = longitude;
     }
 
-    public String getBeaconID() {
-        return beaconID;
+
+    public String getBeaconUUID() {
+        return beaconUUID;
     }
 
-    public void setBeaconID(String beaconID) {
-        this.beaconID = beaconID;
+    public void setBeaconUUID(String beaconUUID) {
+        this.beaconUUID = beaconUUID;
+    }
+
+    public int getBeaconMajor() {
+        return beaconMajor;
+    }
+
+    public void setBeaconMajor(int beaconMajor) {
+        this.beaconMajor = beaconMajor;
+    }
+
+    public int getBeaconMinor() {
+        return beaconMinor;
+    }
+
+    public void setBeaconMinor(int beaconMinor) {
+        this.beaconMinor = beaconMinor;
     }
 
     public int getStars() {
@@ -184,11 +209,13 @@ public class ArtPiece  implements Parcelable{
                 ", name='" + name + '\'' +
                 ", artistID=" + artistID +
                 ", year=" + year +
-                ", pictureID=" + pictureID +
+                ", pictureID='" + pictureID + '\'' +
                 ", description='" + description + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", beaconID='" + beaconID + '\'' +
+                ", beaconUUID='" + beaconUUID + '\'' +
+                ", beaconMajor=" + beaconMajor +
+                ", beaconMinor=" + beaconMinor +
                 ", stars=" + stars +
                 '}';
     }

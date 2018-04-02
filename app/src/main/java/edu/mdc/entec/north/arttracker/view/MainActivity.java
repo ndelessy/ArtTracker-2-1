@@ -2,6 +2,7 @@ package edu.mdc.entec.north.arttracker.view;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -22,11 +23,15 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import edu.mdc.entec.north.arttracker.ProximityService;
+import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.view.common.GetNameDialogFragment;
@@ -34,6 +39,7 @@ import edu.mdc.entec.north.arttracker.view.gallery.ArtFragmentPagerAdapter;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 import edu.mdc.entec.north.arttracker.view.map.MapFragment;
 import edu.mdc.entec.north.arttracker.view.quiz.QuizFragment;
+
 
 public class MainActivity extends AppCompatActivity
 implements GetNameDialogFragment.OnGetNameListener {
@@ -46,10 +52,18 @@ implements GetNameDialogFragment.OnGetNameListener {
     private ArtFragmentPagerAdapter adapter;
     private SharedPreferences sharedPref;
 
+    private ArtPieceWithArtist artPiece;
+    private int showing;
+    private boolean showingList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "-------------------------In the onCreate() method");
         super.onCreate(savedInstanceState);
+        artPiece = this.getIntent().getParcelableExtra("ART_PIECE" );
+        showing = this.getIntent().getIntExtra("SHOWING", GalleryFragment.SHOWING_ART_PIECE);
+        showingList = this.getIntent().getBooleanExtra("SHOWING_LIST", true);
+
 
         AppDatabase.getInstance(this);
 
@@ -60,6 +74,10 @@ implements GetNameDialogFragment.OnGetNameListener {
         setUpDrawerLayout();
 
         sayHelloToUser();
+
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
+        Intent intent = new Intent(this, ProximityService.class);
+        startService(intent);
 
     }
 
@@ -72,7 +90,7 @@ implements GetNameDialogFragment.OnGetNameListener {
         // Create the adapter that will return a fragment for each
         // primary sections of the activity.
         adapter = new ArtFragmentPagerAdapter
-                (getSupportFragmentManager());
+                (getSupportFragmentManager(), showingList, showing, artPiece);
 
         // Set up the ViewPager with the sections adapter.
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -225,6 +243,8 @@ implements GetNameDialogFragment.OnGetNameListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        //Intent intent = new Intent(this, ProximityService.class);
+        //stopService(intent);
         Log.d(TAG, "-------------------------In the onDestroy() method-------------------------------------------");
     }
 
@@ -298,7 +318,6 @@ implements GetNameDialogFragment.OnGetNameListener {
         Toast toast = Toast.makeText(this, "Hello " + name + "! Your password is " + "password", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.TOP, 10, 10);
         toast.show();
-
     }
 
     @Override

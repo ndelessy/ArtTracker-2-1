@@ -8,15 +8,14 @@ import android.support.annotation.NonNull;
 
 @Entity
 public class Artist implements Parcelable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @NonNull
     private int ID;
     private String firstName;
     private String lastName;
     private String details;
 
-    public Artist(int ID, String firstName, String lastName, String details) {
-        this.ID = ID;
+    public Artist(String firstName, String lastName, String details) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.details = details;
