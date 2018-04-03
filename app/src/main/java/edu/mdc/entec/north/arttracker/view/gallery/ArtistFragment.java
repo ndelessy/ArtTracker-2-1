@@ -17,6 +17,7 @@ import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 
 public class ArtistFragment extends Fragment  {
+    private static final String TAG = "--ArtistFragment";
 
     private static final String ARTIST = "artist";
     private Artist artist;
@@ -32,7 +33,6 @@ public class ArtistFragment extends Fragment  {
 
 
     public static ArtistFragment newInstance(Artist artist) {
-        Log.d("TAG", "artist = " + artist);
         ArtistFragment fragment = new ArtistFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARTIST, artist);
@@ -46,15 +46,12 @@ public class ArtistFragment extends Fragment  {
         if (getArguments() != null) {
             artist = getArguments().getParcelable(ARTIST);
         }
-
-        Log.d("TAG", "artist2 = " + artist);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d("TAG", "artist3 = " + artist);
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_artist, container, false);
 

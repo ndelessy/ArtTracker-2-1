@@ -131,7 +131,7 @@ public class ProximityService extends Service {
                 .setTicker(getString(R.string.close_to_art_piece_notification))
                 .setSmallIcon(R.drawable.ic_notification_palette)
                 .setContentTitle(getString(R.string.close_to_art_piece_notification))
-                .setContentText(artPiece.getName() +" by " + artPiece.getArtist().getFirstName() + " " + artPiece.getArtist().getLastName())
+                .setContentText(artPiece.getName() +" by " + artPiece.getFirstName() + " " + artPiece.getLastName())
                 .setContentIntent(pi)
                 .setAutoCancel(false)
                 .setStyle(new NotificationCompat.BigTextStyle()
@@ -168,7 +168,7 @@ public class ProximityService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
 
         // For each start request, send a message to start a job
         Message msg = mServiceHandler.obtainMessage();

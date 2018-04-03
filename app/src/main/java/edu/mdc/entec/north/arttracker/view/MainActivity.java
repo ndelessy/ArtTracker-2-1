@@ -1,11 +1,13 @@
 package edu.mdc.entec.north.arttracker.view;
 
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityManagerCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -75,10 +77,19 @@ implements GetNameDialogFragment.OnGetNameListener {
 
         sayHelloToUser();
 
-        SystemRequirementsChecker.checkWithDefaultDialogs(this);
-        Intent intent = new Intent(this, ProximityService.class);
-        startService(intent);
+        startService();
 
+    }
+
+    private void startService() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service: manager.getRunningServices(Integer.MAX_VALUE)){
+            if(!ProximityService.class.getName().equals(service.service.getClassName())){
+                SystemRequirementsChecker.checkWithDefaultDialogs(this);
+                Intent intent = new Intent(this, ProximityService.class);
+                startService(intent);
+            }
+        }
     }
 
     private void setUpTabsLayout() {

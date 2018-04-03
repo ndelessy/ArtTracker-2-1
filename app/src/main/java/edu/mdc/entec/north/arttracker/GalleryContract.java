@@ -19,7 +19,7 @@ public interface GalleryContract {
 
     interface Presenter extends BasePresenter {
 
-        void showArtist(Artist at);
+        void showArtist(int artistID);
 
         void deleteArtPiece(ArtPieceWithArtist artPiece);
     }

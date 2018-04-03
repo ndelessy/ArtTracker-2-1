@@ -66,7 +66,6 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
             @Override
             protected void onPostExecute(List<ArtPieceWithArtist> artPieces) {
-                Log.d("HERE", "# found " +artPieces.size());
                 galleryView.showArtPieces(artPieces);
             }
         }.execute();
@@ -74,11 +73,11 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
     }
 
-    public void showArtist(final Artist artist){
+    public void showArtist(final int artistID){
         new AsyncTask<Void, Void, List<ArtPiece>>() {
             @Override
             protected List<ArtPiece> doInBackground(Void... params) {
-                return mDb.artPieceModel().findAllArtPiecesByArtistIDSync(artist.getID());
+                return mDb.artPieceModel().findAllArtPiecesByArtistIDSync(artistID);
             }
 
             @Override
@@ -87,7 +86,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
                 new AsyncTask<Void, Void, Artist>() {
                     @Override
                     protected Artist doInBackground(Void... params) {
-                        return mDb.artistModel().loadArtistByID(artist.getID());
+                        return mDb.artistModel().loadArtistByID(artistID);
                     }
 
                     @Override

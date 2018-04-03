@@ -98,10 +98,6 @@ public class ArtPieceWithArtist implements Parcelable {
         return ID;
     }
 
-    public Artist getArtist(){
-        return new Artist(firstName, lastName, details);
-    }
-
     public String getPictureID() {
         return pictureID;
     }

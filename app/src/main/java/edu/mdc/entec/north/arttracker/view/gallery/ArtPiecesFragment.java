@@ -96,7 +96,7 @@ public class ArtPiecesFragment extends Fragment  {
     public interface OnArtPieceSelectedListener {
         void onArtPieceSelected(ArtPieceWithArtist artPieceWithArtist);
         void onArtPieceLongSelected(ArtPieceWithArtist artPieceWithArtist);
-        void onArtistSelected(Artist artist);
+        void onArtistSelected(int artistID);
     }
 
     public ArtPiecesAdapter getAdapter() {

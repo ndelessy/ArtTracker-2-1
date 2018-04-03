@@ -42,7 +42,7 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
     public void onBindViewHolder(ArtPiecesAdapter.ViewHolder holder, int position) {
         ArtPieceWithArtist artPiece = artPieces.get(position);
         holder.nameTextView.setText(artPiece.getName());
-        holder.artistTextView.setText(artPiece.getArtist().getFirstName() + " " + artPiece.getArtist().getLastName());
+        holder.artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
         holder.imageView.setImageResource(artPiece.getPictureID(context));
     }
@@ -81,7 +81,7 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
                 if(view == itemView) {
                     mListener.onArtPieceSelected(ap);
                 } else { // view == checkItOutButton
-                    mListener.onArtistSelected(ap.getArtist());
+                    mListener.onArtistSelected(ap.getArtistID());
                 }
             }
 

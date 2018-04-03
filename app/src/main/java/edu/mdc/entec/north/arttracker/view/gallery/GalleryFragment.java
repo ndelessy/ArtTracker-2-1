@@ -53,8 +53,6 @@ public class GalleryFragment extends Fragment
     private ProgressBar progressBar;
 
     public static Fragment newInstance(boolean showingList, int showing, ArtPieceWithArtist artPiece) {
-        //TODO
-        Log.d("TAG", "artist = " + artPiece);
         GalleryFragment fragment = new GalleryFragment();
         Bundle args = new Bundle();
         args.putParcelable("ART_PIECE", artPiece);
@@ -108,6 +106,7 @@ public class GalleryFragment extends Fragment
             artPieceByArtist = savedInstanceState.getParcelable("artPieceByArtist");
             artPiece = savedInstanceState.getParcelable("artPiece");
             artist = savedInstanceState.getParcelable("artist");
+            //?
             artPieces = savedInstanceState.getParcelableArrayList("artPieces");
             artPiecesByArtist = savedInstanceState.getParcelableArrayList("artPiecesByArtist");
 
@@ -160,13 +159,10 @@ public class GalleryFragment extends Fragment
     }
 
     @Override
-    public void onArtistSelected(Artist at) {
+    public void onArtistSelected(int artistID) {
+        galleryPresenter.showArtist(artistID);
         showingList = false;
         showing = SHOWING_ARTIST;
-        artist = at;
-
-        galleryPresenter.showArtist(at);
-
     }
 
     @Override
@@ -300,7 +296,6 @@ public class GalleryFragment extends Fragment
         showing = SHOWING_ARTIST;
         artist = at;
         this.artPiecesByArtist = artPiecesByArtist;
-
         startFragments();
         progressBar.setVisibility(View.GONE);
     }

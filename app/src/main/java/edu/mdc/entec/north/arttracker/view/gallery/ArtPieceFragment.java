@@ -59,7 +59,7 @@ public class ArtPieceFragment extends Fragment {
         TextView descriptionTextView = view.findViewById(R.id.descriptionTextView);
         ImageView imageView = view.findViewById(R.id.large_pic);
         nameTextView.setText(artPiece.getName());
-        artistTextView.setText(artPiece.getArtist().getFirstName() + " " + artPiece.getArtist().getLastName());
+        artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         yearTextView.setText(Integer.toString(artPiece.getYear()));
         imageView.setImageResource(artPiece.getPictureID(context));
         descriptionTextView.setText(artPiece.getDescription());
