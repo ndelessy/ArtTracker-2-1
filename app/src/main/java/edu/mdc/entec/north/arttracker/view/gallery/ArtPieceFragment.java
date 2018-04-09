@@ -2,6 +2,7 @@ package edu.mdc.entec.north.arttracker.view.gallery;
 
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -63,6 +64,8 @@ public class ArtPieceFragment extends Fragment {
         yearTextView.setText(Integer.toString(artPiece.getYear()));
         imageView.setImageResource(artPiece.getPictureID(context));
         descriptionTextView.setText(artPiece.getDescription());
+
+
         return view;
     }
 

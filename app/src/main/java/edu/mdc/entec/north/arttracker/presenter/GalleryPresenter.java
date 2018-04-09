@@ -1,22 +1,15 @@
 package edu.mdc.entec.north.arttracker.presenter;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.GalleryContract;
-import edu.mdc.entec.north.arttracker.R;
+import edu.mdc.entec.north.arttracker.contract.GalleryContract;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
-import edu.mdc.entec.north.arttracker.view.MainActivity;
-import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 
 
 public class GalleryPresenter implements GalleryContract.Presenter {

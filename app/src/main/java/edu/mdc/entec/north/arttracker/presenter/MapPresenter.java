@@ -2,15 +2,11 @@ package edu.mdc.entec.north.arttracker.presenter;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.GalleryContract;
-import edu.mdc.entec.north.arttracker.MapContract;
-import edu.mdc.entec.north.arttracker.model.ArtPiece;
+import edu.mdc.entec.north.arttracker.contract.MapContract;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
 
 

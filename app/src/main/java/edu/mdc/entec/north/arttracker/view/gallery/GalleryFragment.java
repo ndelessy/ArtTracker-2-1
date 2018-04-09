@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.GalleryContract;
+import edu.mdc.entec.north.arttracker.contract.GalleryContract;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.presenter.GalleryPresenter;

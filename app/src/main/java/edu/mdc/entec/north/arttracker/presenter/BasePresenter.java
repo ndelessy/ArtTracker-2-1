@@ -1,4 +1,4 @@
-package edu.mdc.entec.north.arttracker;
+package edu.mdc.entec.north.arttracker.presenter;
 
 public interface BasePresenter {
 

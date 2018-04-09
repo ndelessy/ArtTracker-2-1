@@ -1,14 +1,11 @@
 package edu.mdc.entec.north.arttracker.view.map;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -17,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,11 +32,9 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.GalleryContract;
-import edu.mdc.entec.north.arttracker.MapContract;
+import edu.mdc.entec.north.arttracker.contract.MapContract;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.presenter.GalleryPresenter;
 import edu.mdc.entec.north.arttracker.presenter.MapPresenter;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;

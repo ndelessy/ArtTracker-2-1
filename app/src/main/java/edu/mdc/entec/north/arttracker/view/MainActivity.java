@@ -5,11 +5,16 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityManagerCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -27,12 +32,16 @@ import android.widget.Toast;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
-import edu.mdc.entec.north.arttracker.ProximityService;
+import edu.mdc.entec.north.arttracker.service.ProximityService;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
 import edu.mdc.entec.north.arttracker.R;
@@ -57,6 +66,8 @@ implements GetNameDialogFragment.OnGetNameListener {
     private ArtPieceWithArtist artPiece;
     private int showing;
     private boolean showingList;
+
+    private Uri sharedFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,8 +265,11 @@ implements GetNameDialogFragment.OnGetNameListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(sharedFileUri != null)
+            this.revokeUriPermission(sharedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         //Intent intent = new Intent(this, ProximityService.class);
         //stopService(intent);
+        revokeFileReadPermission();
         Log.d(TAG, "-------------------------In the onDestroy() method-------------------------------------------");
     }
 
@@ -285,15 +299,83 @@ implements GetNameDialogFragment.OnGetNameListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
-                Log.d(TAG, "Setting menu item clicked");
-                return true;
+            case R.id.action_share:
 
-            case R.id.action_favorite:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                Log.d(TAG, "Favorite menu item clicked");
+                String directory = "images";
+                String fileName = "arcos.jpg";
+
+                InputStream inputStream;
+                File sharedFilePath;
+                File sharedFile = null;
+                FileOutputStream outputStream;
+
+                try {
+                    // Copy file from Assets to app's internal storage (images folder)
+                    inputStream = getAssets().open(directory + "/" + fileName);
+
+                    sharedFilePath = new File(getFilesDir(), directory);
+                    sharedFilePath.mkdirs();
+                    sharedFile = new File(sharedFilePath, fileName);
+                    
+                    outputStream = new FileOutputStream (sharedFile, false);
+                    
+                    byte[] buffer = new byte[8192];
+                    int length;
+                    while ((length = inputStream.read(buffer, 0, 8192)) > 0) {
+                        outputStream.write(buffer, 0, length);
+                    }
+                    outputStream.flush();
+                    outputStream.close();
+                    inputStream.close();
+
+                    // To securely offer a file from your app to another app, you need to configure your app to offer a secure handle to the file,
+                    // in the form of a content URI.
+                    // The Android FileProvider (part of the v4 Support Library) component generates content URIs for files, based on specifications you provide in XML.
+                    // Defining a FileProvider for your app requires an entry in your manifest.
+                    // shares directories within the files/ directory of your app's internal storage
+
+                    sharedFileUri = FileProvider.getUriForFile(this, "edu.mdc.entec.north.arttracker.fileprovider", sharedFile);
+                    // URI should be content://edu.mdc.entec.north.arttracker.fileprovider/images/arcos.png
+                    Log.d(TAG, "sharedFileUri=" + sharedFileUri.toString());
+
+
+
+                    String text = "Look at this!";
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(shareIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                        for (ResolveInfo resolveInfo : resInfoList) {
+                            String packageName = resolveInfo.activityInfo.packageName;
+                            grantUriPermission(packageName, sharedFileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        }
+                    }
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, sharedFileUri);
+                    shareIntent.setType("image/*");
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    if (shareIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(Intent.createChooser(shareIntent, "Share via..."));
+                    }
+
+
+
+                } catch (FileNotFoundException e) {
+                    Log.w("Warning", "The file was not found");
+                    return false;
+                } catch (IOException e) {
+                    Log.w("Warning", "Error reading the file ");
+                    return false;
+                }
+
+                    return true;
+
+
+
+
+            case R.id.action_settings:
+                Log.d(TAG, "Settings menu item clicked");
+
                 return true;
 
             default:
@@ -348,5 +430,14 @@ implements GetNameDialogFragment.OnGetNameListener {
 
     public ArtFragmentPagerAdapter getAdapter() {
         return adapter;
+    }
+
+    public void revokeFileReadPermission() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            String dirpath = getFilesDir() + File.separator + "images";
+            File file = new File(dirpath + File.separator + "arcos.jpg");
+            Uri uri = FileProvider.getUriForFile(this, "edu.mdc.entec.north.arttracker.fileprovider", file);
+            revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
     }
 }
