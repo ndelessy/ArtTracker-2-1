@@ -57,7 +57,10 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
                 // set Dialog Title
                 .setTitle("Important!")
                 // Set Dialog Message
-                .setMessage("Do you really want to remove this art piece?")
+                .setMessage("Do you really want to remove this art piece? "
+                        + artPiece.getName() + " by " + artPiece.getFirstName() + " " + artPiece.getLastName()
+                        + " (" + artPiece.getYear() + ")"
+                )
 
                 // positive button
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {

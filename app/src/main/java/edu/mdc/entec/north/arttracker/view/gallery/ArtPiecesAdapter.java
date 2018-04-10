@@ -1,12 +1,15 @@
 package edu.mdc.entec.north.arttracker.view.gallery;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,12 +17,13 @@ import java.util.List;
 
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
+import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.ViewHolder> {
     private List<ArtPieceWithArtist> artPieces;
-    private static final String TAG = "ArtPiecesAdapter";
-    private Context context;
+    private static final String TAG = "---+ArtPiecesAdapter";
     ArtPiecesFragment.OnArtPieceSelectedListener mListener;
+    private Context context;
 
     public ArtPiecesAdapter(List<ArtPieceWithArtist> artPieces, ArtPiecesFragment.OnArtPieceSelectedListener mListener, Context context) {
         this.artPieces = artPieces;
@@ -45,6 +49,23 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
         holder.artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
         holder.imageView.setImageResource(artPiece.getPictureID(context));
+
+        holder.checkBox.setTag(artPiece);
+        if(mListener.isSelectableMode()) {
+            Log.d(TAG, "mListener.isSelectableMode()="+mListener.isSelectableMode()+"\nmListener.isSelected(artPiece)="+mListener.isSelected(artPiece));
+            holder.checkBox.setVisibility(View.VISIBLE);
+            if(mListener.isSelected(artPiece)) {
+                holder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorDarkGray));
+                holder.checkBox.setChecked(true);
+            } else {
+                holder.checkBox.setChecked(false);
+                holder.cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.white));
+            }
+        } else {
+            holder.checkBox.setVisibility(View.GONE);
+            holder.cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.white));
+        }
+
     }
 
     @Override
@@ -52,13 +73,19 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
         return artPieces.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener
+            , View.OnLongClickListener
+            , CompoundButton.OnCheckedChangeListener
+        {
         //Fields corresponding to the row layout elements
         public TextView nameTextView;
         public TextView artistTextView;
         public TextView yearTextView;
         public Button checkItOutButton;
         public ImageView imageView;
+        public CheckBox checkBox;
+        public CardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -67,6 +94,10 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
             yearTextView = (TextView) itemView.findViewById(R.id.yearTextView);
             checkItOutButton = (Button) itemView.findViewById(R.id.checkItOutButton);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
+            checkBox.setChecked(false);
+            checkBox.setOnCheckedChangeListener(this);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
             checkItOutButton.setOnClickListener(this);
@@ -77,7 +108,6 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 ArtPieceWithArtist ap = artPieces.get(position);
-                Log.d(TAG, "Row or Button for " + artPieces.get(position).getName() + " was clicked");
                 if(view == itemView) {
                     mListener.onArtPieceSelected(ap);
                 } else { // view == checkItOutButton
@@ -92,11 +122,21 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION){
                 ArtPieceWithArtist ap = artPieces.get(position);
-                Log.d(TAG, "Button for "+artPieces.get(position).getName()+" was looooooong  clicked");
                 mListener.onArtPieceLongSelected(ap);
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            if (isChecked) {
+                mListener.addSelectedItem((ArtPieceWithArtist) checkBox.getTag());
+                cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorDarkGray));
+            } else {
+                mListener.removeSelectedItem((ArtPieceWithArtist) checkBox.getTag());
+                cardView.setCardBackgroundColor(context.getResources().getColor(android.R.color.white));
+            }
         }
     }
 }

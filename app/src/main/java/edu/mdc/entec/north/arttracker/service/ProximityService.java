@@ -36,7 +36,7 @@ import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.SHOWIN
 
 public class ProximityService extends Service {
 
-    private static final String TAG = "--ProximityService";
+    private static final String TAG = "-m-ProximityService";
     private static final String CHANNEL_ID = "ART_PIECE_CLOSE";
     //A UUID (Universal Unique Identifier) is a 128-bit number used to uniquely identify some object or entity on the Internet.
     private static final String MDC_UUID = "B9407F30-F5F8-466E-AFF9-25556B575555";
@@ -167,6 +167,7 @@ public class ProximityService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "service starting");
 
         // For each start request, send a message to start a job
         Message msg = mServiceHandler.obtainMessage();
@@ -184,6 +185,9 @@ public class ProximityService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+
+        //Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "service done");
+
     }
 }

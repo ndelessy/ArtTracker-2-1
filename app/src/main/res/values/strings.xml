@@ -10,6 +10,12 @@
     <string name="closeDrawer">Close Drawer</string>
     <string name="close_to_art_piece_notification">You are near an art piece!</string>
     <string name="content_notification">Welcome to the Miami Dade College Sculpture Park</string>
+    <string name="action_delete">Delete</string>
+    <string name="share_text">Look at this art piece from the Sculpture park:</string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="pref_notifications_summary">Receive notifications when you are close to an art piece</string>
+    <string name="pref_username">Username</string>
+    <string name="pref_username_summary">Your username</string>
 
     <string-array name="art_types">
         <item>Painting</item>

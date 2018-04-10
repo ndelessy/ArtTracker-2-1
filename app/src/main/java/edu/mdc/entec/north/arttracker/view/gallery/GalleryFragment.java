@@ -2,18 +2,34 @@ package edu.mdc.entec.north.arttracker.view.gallery;
 
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +46,11 @@ public class GalleryFragment extends Fragment
                     , ConfirmDeleteDialogFragment.OnDeleteConfirmedListener
                     , ArtPiecesByArtistFragment.OnArtPieceByArtistSelectedListener {
 
-    private static final String TAG = "--GalleryFragment";
+
+    private static final String TAG = "---+GalleryFragment";
+
+    public static final String directory = "images";
+    public static final String extension = ".png";
 
     public static final int SHOWING_ART_PIECE = 1;
     public static final int SHOWING_ARTIST = 2;
@@ -48,9 +68,16 @@ public class GalleryFragment extends Fragment
     private Artist artist;
     private List<ArtPieceWithArtist> artPieces;
     private List<ArtPiece> artPiecesByArtist;
+    private ActionMode.Callback actionModeCallbacks;
+    private  ActionMode actionMode;
+
+    private ArrayList<Uri> sharedFileUris;
+
+    private ArrayList<ArtPieceWithArtist> selectedItems = new ArrayList<ArtPieceWithArtist>();
 
     //Ui element
     private ProgressBar progressBar;
+    private boolean isSelectableMode;
 
     public static Fragment newInstance(boolean showingList, int showing, ArtPieceWithArtist artPiece) {
         GalleryFragment fragment = new GalleryFragment();
@@ -145,6 +172,7 @@ public class GalleryFragment extends Fragment
     //UI logic
     @Override
     public void onArtPieceSelected(ArtPieceWithArtist ap) {
+        stopActionMode();
         showingList = false;
         showing = SHOWING_ART_PIECE;
         artPiece = ap;
@@ -154,15 +182,160 @@ public class GalleryFragment extends Fragment
 
     @Override
     public void onArtPieceLongSelected(ArtPieceWithArtist ap) {
-        DialogFragment newFragment = ConfirmDeleteDialogFragment.newInstance(ap);
-        newFragment.show(getChildFragmentManager(), "confirmDeleteArtPiece");
+        selectedItems.add(ap);
+        actionModeCallbacks = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.action_mode_menu, menu);
+                isSelectableMode = true;
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_share:
+                        shareArtPieces();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    case R.id.action_delete:
+                        deleteArtPieces();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                isSelectableMode = false;
+                selectedItems.clear();
+                ArtPiecesFragment fg = (ArtPiecesFragment) getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+                if(fg != null){
+                    fg.getAdapter().notifyDataSetChanged();
+                }
+            }
+        };
+
+        actionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(actionModeCallbacks);
+        ArtPiecesFragment fg = (ArtPiecesFragment) getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+        if(fg != null){
+            fg.getAdapter().notifyDataSetChanged();
+        }
+
+
+    }
+
+    private void deleteArtPieces() {
+        for (ArtPieceWithArtist artPieceWithArtist : selectedItems) {
+            DialogFragment newFragment = ConfirmDeleteDialogFragment.newInstance(artPieceWithArtist);
+            newFragment.show(getChildFragmentManager(), "confirmDeleteArtPiece");
+        }
+    }
+
+    private void shareArtPieces() {
+        InputStream inputStream;
+        File sharedFilePath;
+        File sharedFile = null;
+        FileOutputStream outputStream;
+        sharedFileUris = new ArrayList<>();
+
+        for (ArtPieceWithArtist artPieceWithArtist : selectedItems) {
+            Log.d(TAG, "copying artPieceWithArtist = " + artPieceWithArtist.getName());
+            try {
+                // Copy file from Assets to app's internal storage (images folder)
+                inputStream = getActivity().getAssets().open(directory + "/" + artPieceWithArtist.getPictureID() + extension);
+
+                sharedFilePath = new File(getActivity().getFilesDir(), directory);
+                sharedFilePath.mkdirs();
+                sharedFile = new File(sharedFilePath, artPieceWithArtist.getPictureID() + extension);
+
+                outputStream = new FileOutputStream(sharedFile, false);
+
+                byte[] buffer = new byte[8192];
+                int length;
+                while ((length = inputStream.read(buffer, 0, 8192)) > 0) {
+                    outputStream.write(buffer, 0, length);
+                }
+                outputStream.flush();
+                outputStream.close();
+                inputStream.close();
+
+                // To securely offer a file from your app to another app, you need to configure your app to offer a secure handle to the file,
+                // in the form of a content URI.
+                // The Android FileProvider (part of the v4 Support Library) component generates content URIs for files, based on specifications you provide in XML.
+                // Defining a FileProvider for your app requires an entry in your manifest.
+                // shares directories within the files/ directory of your app's internal storage
+
+                Uri sharedFileUri = FileProvider.getUriForFile(getActivity(), "edu.mdc.entec.north.arttracker.fileprovider", sharedFile);
+                sharedFileUris.add(sharedFileUri);
+                // URI should be content://edu.mdc.entec.north.arttracker.fileprovider/images/arcos.png
+                Log.d(TAG, "sharedFileUri=" + sharedFileUri.toString());
+
+            } catch (FileNotFoundException e) {
+                Log.w("Warning", "The file was not found");
+            } catch (IOException e) {
+                Log.w("Warning", "Error reading the file ");
+            }
+        }
+
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, R.string.share_text);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.share_text);
+        List<ResolveInfo> resInfoList = getActivity().getPackageManager().queryIntentActivities(shareIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        for(Uri sharedFileUri: sharedFileUris) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    getActivity().grantUriPermission(packageName, sharedFileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+            }
+        }
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, sharedFileUris);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(Intent.createChooser(shareIntent, "Share via..."));
+        }
     }
 
     @Override
     public void onArtistSelected(int artistID) {
+        stopActionMode();
         galleryPresenter.showArtist(artistID);
         showingList = false;
         showing = SHOWING_ARTIST;
+    }
+
+    @Override
+    public boolean isSelectableMode() {
+        return isSelectableMode;
+    }
+
+    @Override
+    public boolean isSelected(ArtPieceWithArtist artPieceWithArtist) {
+        return  selectedItems.contains(artPieceWithArtist);
+    }
+
+    @Override
+    public void removeSelectedItem(ArtPieceWithArtist artPieceWithArtist) {
+        selectedItems.remove(artPieceWithArtist);
+    }
+
+    @Override
+    public void addSelectedItem(ArtPieceWithArtist artPieceWithArtist) {
+        if(!selectedItems.contains(artPieceWithArtist))
+        selectedItems.add(artPieceWithArtist);
     }
 
     @Override
@@ -232,7 +405,20 @@ public class GalleryFragment extends Fragment
     @Override
     public void onPause() {
         super.onPause();
+        stopActionMode();
         Log.d(TAG, "-------------------------In the onPause() method");
+    }
+
+    private void stopActionMode(){
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+        isSelectableMode = false;
+        selectedItems.clear();
+        ArtPiecesFragment fg = (ArtPiecesFragment) getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+        if(fg != null){
+            fg.getAdapter().notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -250,8 +436,15 @@ public class GalleryFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(sharedFileUris!= null) {
+            for (Uri sharedFileUri : sharedFileUris) {
+                if (sharedFileUri != null)
+                    getActivity().revokeUriPermission(sharedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+        }
         Log.d(TAG, "-------------------------In the onDestroy() method");
     }
+
 
     @Override
     public void onDetach() {
@@ -336,6 +529,7 @@ public class GalleryFragment extends Fragment
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         ArtPiecesByArtistFragment artPiecesByArtistFragment = ArtPiecesByArtistFragment.newInstance(artPiecesByArtist);
         transaction.replace(containerArtPieces, artPiecesByArtistFragment, "artPiecesByArtistFragment");
+
         transaction.addToBackStack("artPiecesByArtistFragment");
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();

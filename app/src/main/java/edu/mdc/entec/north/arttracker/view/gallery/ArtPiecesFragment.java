@@ -97,6 +97,12 @@ public class ArtPiecesFragment extends Fragment  {
         void onArtPieceSelected(ArtPieceWithArtist artPieceWithArtist);
         void onArtPieceLongSelected(ArtPieceWithArtist artPieceWithArtist);
         void onArtistSelected(int artistID);
+        boolean isSelectableMode();
+        boolean isSelected(ArtPieceWithArtist artPieceWithArtist);
+
+        void removeSelectedItem(ArtPieceWithArtist artPieceWithArtist);
+
+        void addSelectedItem(ArtPieceWithArtist artPieceWithArtist);
     }
 
     public ArtPiecesAdapter getAdapter() {

@@ -19,6 +19,7 @@ public class ArtPieceFragment extends Fragment {
     private static final String ART_PIECE = "artPiece";
     private ArtPieceWithArtist artPiece;
     private Context context;
+    private MediaPlayer audioPlayer;
 
     public ArtPieceFragment() {
         // Required empty public constructor
@@ -65,12 +66,18 @@ public class ArtPieceFragment extends Fragment {
         imageView.setImageResource(artPiece.getPictureID(context));
         descriptionTextView.setText(artPiece.getDescription());
 
+        audioPlayer = MediaPlayer.create(getActivity(), R.raw.sample_audio);
+        audioPlayer.start();
+
 
         return view;
     }
 
+    @Override
+    public void onPause() {
+        audioPlayer.pause();
+        super.onPause();
+    }
+
 }
-
-
-
 
