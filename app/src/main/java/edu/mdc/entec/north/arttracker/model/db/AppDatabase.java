@@ -124,7 +124,7 @@ public abstract class AppDatabase extends RoomDatabase {
         mDb.artPieceModel().insertArtPiece(ap7);
 
         //Arcos
-        ArtPiece ap8 = new ArtPiece(8, "Arcos", 3, 2004, "arcos", "Painted steel, 9’ x 8” x  l, 6”\n\nA representation of bows used throughout history.  Graceful, yet simple metaphoric expression inspired by Afro-Cuban culture and symbols.",
+        ArtPiece ap8 = new ArtPiece(8, "Arcos", 3, 2004, "arcos_sound", "Painted steel, 9’ x 8” x  l, 6”\n\nA representation of bows used throughout history.  Graceful, yet simple metaphoric expression inspired by Afro-Cuban culture and symbols.",
                 0, 0, "xxx-xxx-xxxx", 0);
         mDb.artPieceModel().insertArtPiece(ap8);
         //untitled#1

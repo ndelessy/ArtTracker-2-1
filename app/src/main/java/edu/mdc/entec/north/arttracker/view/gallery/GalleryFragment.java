@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.VideoView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,8 +50,8 @@ public class GalleryFragment extends Fragment
 
     private static final String TAG = "---+GalleryFragment";
 
-    public static final String directory = "images";
-    public static final String extension = ".png";
+    public static final String DIRECTORY = "images";
+    public static final String EXTENSION = ".png";
 
     public static final int SHOWING_ART_PIECE = 1;
     public static final int SHOWING_ARTIST = 2;
@@ -120,6 +121,7 @@ public class GalleryFragment extends Fragment
         Log.d(TAG, "-------------------------In the onCreateView() method");
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
 
@@ -251,11 +253,11 @@ public class GalleryFragment extends Fragment
             Log.d(TAG, "copying artPieceWithArtist = " + artPieceWithArtist.getName());
             try {
                 // Copy file from Assets to app's internal storage (images folder)
-                inputStream = getActivity().getAssets().open(directory + "/" + artPieceWithArtist.getPictureID() + extension);
+                inputStream = getActivity().getAssets().open(DIRECTORY + "/" + artPieceWithArtist.getPictureID() + EXTENSION);
 
-                sharedFilePath = new File(getActivity().getFilesDir(), directory);
+                sharedFilePath = new File(getActivity().getFilesDir(), DIRECTORY);
                 sharedFilePath.mkdirs();
-                sharedFile = new File(sharedFilePath, artPieceWithArtist.getPictureID() + extension);
+                sharedFile = new File(sharedFilePath, artPieceWithArtist.getPictureID() + EXTENSION);
 
                 outputStream = new FileOutputStream(sharedFile, false);
 
@@ -272,11 +274,11 @@ public class GalleryFragment extends Fragment
                 // in the form of a content URI.
                 // The Android FileProvider (part of the v4 Support Library) component generates content URIs for files, based on specifications you provide in XML.
                 // Defining a FileProvider for your app requires an entry in your manifest.
-                // shares directories within the files/ directory of your app's internal storage
+                // shares directories within the files/ DIRECTORY of your app's internal storage
 
                 Uri sharedFileUri = FileProvider.getUriForFile(getActivity(), "edu.mdc.entec.north.arttracker.fileprovider", sharedFile);
                 sharedFileUris.add(sharedFileUri);
-                // URI should be content://edu.mdc.entec.north.arttracker.fileprovider/images/arcos.png
+                // URI should be content://edu.mdc.entec.north.arttracker.fileprovider/images/arcos_sound.png
                 Log.d(TAG, "sharedFileUri=" + sharedFileUri.toString());
 
             } catch (FileNotFoundException e) {

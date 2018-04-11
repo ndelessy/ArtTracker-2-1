@@ -12,8 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import edu.mdc.entec.north.arttracker.R;
+import edu.mdc.entec.north.arttracker.Utils;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
+
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.DIRECTORY;
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.EXTENSION;
 
 
 public class ArtPieceByArtistFragment extends Fragment {
@@ -61,7 +65,9 @@ public class ArtPieceByArtistFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.large_pic4);
         nameTextView.setText(artPiece.getName());
         yearTextView.setText(Integer.toString(artPiece.getYear()));
-        imageView.setImageResource(artPiece.getPictureID(context));
+        //imageView.setImageResource(artPiece.getPictureID(context));
+        imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+
         descriptionTextView.setText(artPiece.getDescription());
         return view;
     }

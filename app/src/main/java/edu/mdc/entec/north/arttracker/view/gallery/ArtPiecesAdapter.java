@@ -16,8 +16,12 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.mdc.entec.north.arttracker.R;
+import edu.mdc.entec.north.arttracker.Utils;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
+
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.DIRECTORY;
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.EXTENSION;
 
 public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.ViewHolder> {
     private List<ArtPieceWithArtist> artPieces;
@@ -48,7 +52,9 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
         holder.nameTextView.setText(artPiece.getName());
         holder.artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
-        holder.imageView.setImageResource(artPiece.getPictureID(context));
+        //holder.imageView.setImageResource(artPiece.getPictureID(context));
+        holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+
 
         holder.checkBox.setTag(artPiece);
         if(mListener.isSelectableMode()) {

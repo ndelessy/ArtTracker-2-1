@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
+import edu.mdc.entec.north.arttracker.Utils;
 import edu.mdc.entec.north.arttracker.contract.MapContract;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
@@ -39,6 +40,8 @@ import edu.mdc.entec.north.arttracker.presenter.MapPresenter;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.DIRECTORY;
+import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.EXTENSION;
 import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.SHOWING_ART_PIECE;
 
 
@@ -159,6 +162,8 @@ public class MapFragment extends Fragment
 
                 ImageView imageView = (ImageView) infoWindow.findViewById(R.id.imageView4);
                 imageView.setImageResource( ((ArtPieceWithArtist) marker.getTag()).getPictureID(getContext()));
+                imageView.setImageBitmap(Utils.loadBitmapFromAssets(getContext(), DIRECTORY + "/" + ((ArtPieceWithArtist) marker.getTag()).getPictureID() + EXTENSION));
+
 
 
                 return infoWindow;
