@@ -25,11 +25,12 @@ public class ArtPieceWithArtist implements Parcelable {
     private String firstName;
     private String lastName;
     private String details;
+    private String youtubeVideoID;
 
     public ArtPieceWithArtist(int artPieceID, String name, int artistID,
                               int year, String pictureID, String description,
                               double latitude, double longitude, String beaconID,
-                              int stars, int ID, String firstName, String lastName, String details) {
+                              int stars, int ID, String firstName, String lastName, String details, String youtubeVideoID) {
         this.artPieceID = artPieceID;
         this.name = name;
         this.artistID = artistID;
@@ -44,6 +45,7 @@ public class ArtPieceWithArtist implements Parcelable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.details = details;
+        this.youtubeVideoID = youtubeVideoID;
     }
 
 
@@ -62,6 +64,7 @@ public class ArtPieceWithArtist implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         details = in.readString();
+        youtubeVideoID = in.readString();
     }
 
     public static final Creator<ArtPieceWithArtist> CREATOR = new Creator<ArtPieceWithArtist>() {
@@ -194,6 +197,14 @@ public class ArtPieceWithArtist implements Parcelable {
         this.stars = stars;
     }
 
+    public String getYoutubeVideoID() {
+        return youtubeVideoID;
+    }
+
+    public void setYoutubeVideoID(String youtubeVideoID) {
+        this.youtubeVideoID = youtubeVideoID;
+    }
+
     @Override
     public String toString() {
         return "ArtPieceWithArtist{" +
@@ -211,6 +222,7 @@ public class ArtPieceWithArtist implements Parcelable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", details='" + details + '\'' +
+                ", youtubeVideoID='" + youtubeVideoID + '\'' +
                 '}';
     }
 
@@ -235,5 +247,6 @@ public class ArtPieceWithArtist implements Parcelable {
         parcel.writeString(firstName);
         parcel.writeString(lastName);
         parcel.writeString(details);
+        parcel.writeString(youtubeVideoID);
     }
 }

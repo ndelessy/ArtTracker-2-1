@@ -1,11 +1,13 @@
 package edu.mdc.entec.north.arttracker.model.db;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.DatabaseConfiguration;
 import android.arch.persistence.room.InvalidationTracker;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.util.Log;
 
@@ -20,7 +22,8 @@ import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.Artist;
 
 
-@Database(entities = {ArtPiece.class, Artist.class}, version = 3)
+
+@Database(entities = {ArtPiece.class, Artist.class}, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = "--AppDatabase";
     private static final String DATABASE_NAME = "artPieces.db";
@@ -31,6 +34,14 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ArtistDAO artistModel();
 
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE Artist "
+                    + " ADD COLUMN youtubeVideoID TEXT");
+        }
+    };
+
 
     public static AppDatabase getInstance(Context context){
         if (INSTANCE == null){
@@ -38,13 +49,17 @@ public abstract class AppDatabase extends RoomDatabase {
 
             if (!dbPath.exists()) {// If the database file does not exist
                 // Make sure we have a path to the file
+                Log.d(TAG, "!dbPath.exists() copying");
                 dbPath.getParentFile().mkdirs();
                 copyPrePopulatedDb(dbPath, DATABASE_NAME, context);
+            } else {
+                Log.d(TAG, "dbPath.exists()");
             }
 
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                     AppDatabase.class, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
+                    //.fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_3_4)
                     .build();
         }
         return INSTANCE;

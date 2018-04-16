@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import edu.mdc.entec.north.arttracker.Config;
 import edu.mdc.entec.north.arttracker.service.ProximityService;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
@@ -50,9 +51,12 @@ import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.view.common.GetNameDialogFragment;
 import edu.mdc.entec.north.arttracker.view.common.SettingsFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.ArtFragmentPagerAdapter;
+import edu.mdc.entec.north.arttracker.view.gallery.ArtistFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 import edu.mdc.entec.north.arttracker.view.map.MapFragment;
 import edu.mdc.entec.north.arttracker.view.quiz.QuizFragment;
+
+import static edu.mdc.entec.north.arttracker.view.gallery.ArtistFragment.YOUTUBE_RECOVERY_REQUEST;
 
 
 public class MainActivity extends AppCompatActivity
@@ -282,5 +286,17 @@ implements GetNameDialogFragment.OnGetNameListener {
         return adapter;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == YOUTUBE_RECOVERY_REQUEST) {
+            // Retry initialization if user performed a recovery action
+            ArtistFragment fragment = (ArtistFragment) getSupportFragmentManager().findFragmentByTag("artistFragment");
+            try {
+                fragment.getYouTubePlayerProvider().initialize(Config.YOUTUBE_API_KEY, fragment);
+            } catch (RuntimeException e) {
+                Log.d(TAG, "Problem playing th youtube video");
+            }
+        }
+    }
 
 }

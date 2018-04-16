@@ -487,6 +487,7 @@ public class GalleryFragment extends Fragment
     }
 
     public void showArtist(Artist at, List<ArtPiece> artPiecesByArtist) {
+        Log.d(TAG, "Artist = "+ at);
         showingList = false;
         showing = SHOWING_ARTIST;
         artist = at;

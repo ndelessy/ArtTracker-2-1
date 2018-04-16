@@ -9,15 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.android.youtube.player.YouTubePlayerView;
+
+import edu.mdc.entec.north.arttracker.Config;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 
-public class ArtistFragment extends Fragment  {
+public class ArtistFragment extends Fragment
+        implements YouTubePlayer.OnInitializedListener {
     private static final String TAG = "--ArtistFragment";
+    public static final int YOUTUBE_RECOVERY_REQUEST = 123;
 
     private static final String ARTIST = "artist";
     private Artist artist;
@@ -26,6 +35,7 @@ public class ArtistFragment extends Fragment  {
     private TextView lastNameTextView;
     private TextView detailsTextView;
 
+    private YouTubePlayerSupportFragment youtubeFragment;
 
     public ArtistFragment() {
         // Required empty public constructor
@@ -59,11 +69,62 @@ public class ArtistFragment extends Fragment  {
         lastNameTextView = view.findViewById(R.id.lastNameTextView);
         detailsTextView = view.findViewById(R.id.detailsTextView);
 
+
         firstNameTextView.setText(artist.getFirstName());
         lastNameTextView.setText(artist.getLastName());
         detailsTextView.setText(artist.getDetails());
 
+        youtubeFragment = (YouTubePlayerSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.youtubeFragment);
+        if(artist.getYoutubeVideoID() != null) {
+
+
+            if (youtubeFragment == null) {
+                youtubeFragment = YouTubePlayerSupportFragment.newInstance();
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.youtubeFragment, youtubeFragment)
+                        .commit();
+            }
+
+            //Requires Developer Key to work.
+            youtubeFragment.initialize(Config.YOUTUBE_API_KEY, this);
+
+        } else {
+            if (youtubeFragment != null) {
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .hide(youtubeFragment)
+                        .commit();
+            }
+        }
         return view;
     }
 
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider,
+                                        YouTubePlayer youTubePlayer, boolean wasRestored) {
+        Log.d(TAG, "video = " + artist.getYoutubeVideoID());
+        if (!wasRestored) {
+            youTubePlayer.cueVideo(artist.getYoutubeVideoID()); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
+        }
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider provider,
+                                        YouTubeInitializationResult errorReason) {
+        Log.d(TAG, "failure = ");
+        if (errorReason.isUserRecoverableError()) {
+            errorReason.getErrorDialog(getActivity(), YOUTUBE_RECOVERY_REQUEST).show();
+        } else {
+            String error = String.format(getString(R.string.player_error), errorReason.toString());
+            Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+    public YouTubePlayer.Provider getYouTubePlayerProvider() {
+        return youtubeFragment;
+    }
 }

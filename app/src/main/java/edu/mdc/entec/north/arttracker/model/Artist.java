@@ -14,11 +14,13 @@ public class Artist implements Parcelable {
     private String firstName;
     private String lastName;
     private String details;
+    private String youtubeVideoID;
 
-    public Artist(String firstName, String lastName, String details) {
+    public Artist(String firstName, String lastName, String details, String youtubeVideoID) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.details = details;
+        this.youtubeVideoID = youtubeVideoID;
     }
 
     protected Artist(Parcel in) {
@@ -26,6 +28,7 @@ public class Artist implements Parcelable {
         firstName = in.readString();
         lastName = in.readString();
         details = in.readString();
+        youtubeVideoID = in.readString();
     }
 
     public static final Creator<Artist> CREATOR = new Creator<Artist>() {
@@ -72,6 +75,14 @@ public class Artist implements Parcelable {
         this.details = details;
     }
 
+    public String getYoutubeVideoID() {
+        return youtubeVideoID;
+    }
+
+    public void setYoutubeVideoID(String youtubeVideoID) {
+        this.youtubeVideoID = youtubeVideoID;
+    }
+
     @Override
     public String toString() {
         return "Artist{" +
@@ -79,6 +90,7 @@ public class Artist implements Parcelable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", details='" + details + '\'' +
+                ", youtubeVideoID='" + youtubeVideoID + '\'' +
                 '}';
     }
 
@@ -93,5 +105,6 @@ public class Artist implements Parcelable {
         parcel.writeString(firstName);
         parcel.writeString(lastName);
         parcel.writeString(details);
+        parcel.writeString(youtubeVideoID);
     }
 }

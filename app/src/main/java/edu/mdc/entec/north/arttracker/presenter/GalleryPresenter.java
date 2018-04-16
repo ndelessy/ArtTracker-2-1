@@ -2,6 +2,7 @@ package edu.mdc.entec.north.arttracker.presenter;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class GalleryPresenter implements GalleryContract.Presenter {
 
                     @Override
                     protected void onPostExecute(Artist artist) {
+                        Log.d(TAG, "Artist = "+artist);
                         galleryView.showArtist(artist, artPiecesByArtist);
                     }
                 }.execute();

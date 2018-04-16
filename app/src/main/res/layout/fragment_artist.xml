@@ -20,12 +20,13 @@
             android:id="@+id/firstNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="2dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="first name"
+            app:layout_constraintBottom_toTopOf="@+id/detailsTextView"
             app:layout_constraintEnd_toStartOf="@+id/lastNameTextView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -37,13 +38,15 @@
             android:id="@+id/lastNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="2dp"
             android:text="last name"
-
+            app:layout_constraintBaseline_toBaselineOf="@+id/firstNameTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/firstNameTextView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/firstNameTextView" />
 
 
         <TextView
@@ -59,7 +62,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/firstNameTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/firstNameTextView"
+            app:layout_constraintBottom_toTopOf="@+id/youtubeFragment"/>
+
+        <FrameLayout
+            android:id="@+id/youtubeFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailsTextView"
+            app:layout_constraintBottom_toTopOf="@+id/containerArtPieces"
+            />
 
         <FrameLayout
 
@@ -74,7 +93,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailsTextView"
+            app:layout_constraintTop_toBottomOf="@+id/youtubeFragment"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:context=".view.gallery.GalleryFragment">
 
         </FrameLayout>

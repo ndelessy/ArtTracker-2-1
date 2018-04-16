@@ -16,6 +16,7 @@
     <string name="pref_notifications_summary">Receive notifications when you are close to an art piece</string>
     <string name="pref_username">Username</string>
     <string name="pref_username_summary">Your username</string>
+    <string name="player_error">Error initializing YouTube player: %s</string>
 
     <string-array name="art_types">
         <item>Painting</item>
