@@ -53,8 +53,11 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
         holder.artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
         //holder.imageView.setImageResource(artPiece.getPictureID(context));
-        holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
-
+        try {
+            holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+        } catch(Exception e){
+        Log.e(TAG, e.getMessage());
+        }
 
         holder.checkBox.setTag(artPiece);
         if(mListener.isSelectableMode()) {
