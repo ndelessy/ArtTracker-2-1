@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
+
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -79,6 +81,8 @@ public class GalleryFragment extends Fragment
     //Ui element
     private ProgressBar progressBar;
     private boolean isSelectableMode;
+
+
 
     public static Fragment newInstance(boolean showingList, int showing, ArtPieceWithArtist artPiece) {
         GalleryFragment fragment = new GalleryFragment();
@@ -548,6 +552,7 @@ public class GalleryFragment extends Fragment
     }
 
     private void startArtPieceFragment(ArtPieceWithArtist ap, int container) {
+
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         ArtPieceFragment artPieceFragment = ArtPieceFragment.newInstance(ap);
         transaction.replace(container, artPieceFragment, "artPieceFragment");

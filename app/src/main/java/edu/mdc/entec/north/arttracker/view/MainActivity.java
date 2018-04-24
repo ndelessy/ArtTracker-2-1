@@ -5,20 +5,14 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -27,27 +21,23 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.Config;
+import edu.mdc.entec.north.arttracker.model.ArtPiece;
+import edu.mdc.entec.north.arttracker.model.Artist;
+import edu.mdc.entec.north.arttracker.model.firestore.FireStoreDB;
+import edu.mdc.entec.north.arttracker.utils.Config;
 import edu.mdc.entec.north.arttracker.service.ProximityService;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
 import edu.mdc.entec.north.arttracker.R;
+import edu.mdc.entec.north.arttracker.utils.ImageDownloadCallback;
+import edu.mdc.entec.north.arttracker.utils.ImageDownloadFragment;
 import edu.mdc.entec.north.arttracker.view.common.GetNameDialogFragment;
 import edu.mdc.entec.north.arttracker.view.common.SettingsFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.ArtFragmentPagerAdapter;
@@ -60,8 +50,9 @@ import static edu.mdc.entec.north.arttracker.view.gallery.ArtistFragment.YOUTUBE
 
 
 public class MainActivity extends AppCompatActivity
-implements GetNameDialogFragment.OnGetNameListener {
-    private static final String TAG = "--MainActivity";
+        implements GetNameDialogFragment.OnGetNameListener
+        , ImageDownloadCallback{
+    private static final String TAG = ",,MainActivity";
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -73,13 +64,16 @@ implements GetNameDialogFragment.OnGetNameListener {
     private boolean showingList;
     private boolean settingsIsOpen;
 
-
     private SettingsFragment f = null;
+
+    public boolean mDownloading = false;
+    private ImageDownloadFragment imageDownloadFragment;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         settingsIsOpen = false;
+
 
         Log.d(TAG, "-------------------------In the onCreate() method");
         super.onCreate(savedInstanceState);
@@ -90,6 +84,8 @@ implements GetNameDialogFragment.OnGetNameListener {
 
         AppDatabase.getInstance(this);
 
+        syncDataFromWeb();
+
         setContentView(R.layout.activity_main);
 
         setUpTabsLayout();
@@ -98,6 +94,11 @@ implements GetNameDialogFragment.OnGetNameListener {
 
         startService();
 
+    }
+
+    private void syncDataFromWeb(){
+        FireStoreDB dB = FireStoreDB.getInstance(this);
+        dB.loadAll();
     }
 
     private void startService() {
@@ -299,4 +300,22 @@ implements GetNameDialogFragment.OnGetNameListener {
         }
     }
 
+    @Override
+    public NetworkInfo getActiveNetworkInfo() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        Log.d(TAG, " in getActiveNetworkInfo" + networkInfo);
+        return networkInfo;
+    }
+
+    @Override
+    public void finishDownloading() {
+        mDownloading = false;
+        if (imageDownloadFragment != null) {
+            imageDownloadFragment.cancelDownload();
+        }
+
+    }
 }

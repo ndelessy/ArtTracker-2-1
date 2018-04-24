@@ -32,7 +32,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import edu.mdc.entec.north.arttracker.Utils;
+import edu.mdc.entec.north.arttracker.utils.Utils;
 import edu.mdc.entec.north.arttracker.contract.MapContract;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;

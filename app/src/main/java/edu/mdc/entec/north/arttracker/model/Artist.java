@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 @Entity
 public class Artist implements Parcelable {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey //(autoGenerate = true)
     @NonNull
     private int ID;
     private String firstName;
@@ -16,7 +16,8 @@ public class Artist implements Parcelable {
     private String details;
     private String youtubeVideoID;
 
-    public Artist(String firstName, String lastName, String details, String youtubeVideoID) {
+    public Artist(int ID, String firstName, String lastName, String details, String youtubeVideoID) {
+        this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.details = details;

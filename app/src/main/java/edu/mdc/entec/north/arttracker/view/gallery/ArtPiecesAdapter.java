@@ -16,9 +16,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.mdc.entec.north.arttracker.R;
-import edu.mdc.entec.north.arttracker.Utils;
+import edu.mdc.entec.north.arttracker.utils.Utils;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.DIRECTORY;
 import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.EXTENSION;

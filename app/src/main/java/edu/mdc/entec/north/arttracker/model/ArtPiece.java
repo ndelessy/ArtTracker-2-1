@@ -9,12 +9,14 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 
-@Entity(foreignKeys = {
+@Entity
+        (foreignKeys = {
         @ForeignKey(entity = Artist.class,
                 parentColumns = "ID",
                 childColumns = "artistID")})
+
 public class ArtPiece  implements Parcelable{
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey //(autoGenerate = true)
     @NonNull
     private int artPieceID;
     private String name;
@@ -30,10 +32,11 @@ public class ArtPiece  implements Parcelable{
     private int stars;
 
 
-    public ArtPiece(String name, int artistID, int year, String pictureID, String description,
+    public ArtPiece(int artPieceID, String name, int artistID, int year, String pictureID, String description,
                     double latitude, double longitude,
                     String beaconUUID, int beaconMajor, int beaconMinor,
                     int stars) {
+        this.artPieceID = artPieceID;
         this.name = name;
         this.artistID = artistID;
         this.year = year;

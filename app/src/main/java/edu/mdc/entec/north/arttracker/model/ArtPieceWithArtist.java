@@ -18,7 +18,7 @@ public class ArtPieceWithArtist implements Parcelable {
     private String description;
     private double latitude;
     private double longitude;
-    private String beaconID;
+    private String beaconUUID;
     private int stars;
 
     private int ID;
@@ -29,7 +29,7 @@ public class ArtPieceWithArtist implements Parcelable {
 
     public ArtPieceWithArtist(int artPieceID, String name, int artistID,
                               int year, String pictureID, String description,
-                              double latitude, double longitude, String beaconID,
+                              double latitude, double longitude, String beaconUUID,
                               int stars, int ID, String firstName, String lastName, String details, String youtubeVideoID) {
         this.artPieceID = artPieceID;
         this.name = name;
@@ -39,7 +39,7 @@ public class ArtPieceWithArtist implements Parcelable {
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.beaconID = beaconID;
+        this.beaconUUID = beaconUUID;
         this.stars = stars;
         this.ID = ID;
         this.firstName = firstName;
@@ -58,7 +58,7 @@ public class ArtPieceWithArtist implements Parcelable {
         description = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
-        beaconID = in.readString();
+        beaconUUID = in.readString();
         stars = in.readInt();
         ID = in.readInt();
         firstName = in.readString();
@@ -181,12 +181,12 @@ public class ArtPieceWithArtist implements Parcelable {
         this.longitude = longitude;
     }
 
-    public String getBeaconID() {
-        return beaconID;
+    public String getBeaconUUID() {
+        return beaconUUID;
     }
 
-    public void setBeaconID(String beaconID) {
-        this.beaconID = beaconID;
+    public void setBeaconUUID(String beaconUUID) {
+        this.beaconUUID = beaconUUID;
     }
 
     public int getStars() {
@@ -216,7 +216,7 @@ public class ArtPieceWithArtist implements Parcelable {
                 ", description='" + description + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", beaconID='" + beaconID + '\'' +
+                ", beaconUUID='" + beaconUUID + '\'' +
                 ", stars=" + stars +
                 ", ID=" + ID +
                 ", firstName='" + firstName + '\'' +
@@ -241,7 +241,7 @@ public class ArtPieceWithArtist implements Parcelable {
         parcel.writeString(description);
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
-        parcel.writeString(beaconID);
+        parcel.writeString(beaconUUID);
         parcel.writeInt(stars);
         parcel.writeInt(ID);
         parcel.writeString(firstName);

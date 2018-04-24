@@ -23,7 +23,7 @@ import edu.mdc.entec.north.arttracker.model.Artist;
 
 
 
-@Database(entities = {ArtPiece.class, Artist.class}, version = 4)
+@Database(entities = {ArtPiece.class, Artist.class}, version = 5)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String TAG = "--AppDatabase";
     private static final String DATABASE_NAME = "artPieces.db";
@@ -39,6 +39,13 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE Artist "
                     + " ADD COLUMN youtubeVideoID TEXT");
+        }
+    };
+
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            //removed autoincrement
         }
     };
 
@@ -60,6 +67,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     AppDatabase.class, DATABASE_NAME)
                     //.fallbackToDestructiveMigration()
                     .addMigrations(MIGRATION_3_4)
+                    .addMigrations(MIGRATION_4_5)
                     .build();
         }
         return INSTANCE;

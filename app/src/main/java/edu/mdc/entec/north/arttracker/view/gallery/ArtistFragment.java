@@ -3,7 +3,6 @@ package edu.mdc.entec.north.arttracker.view.gallery;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +13,10 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-import com.google.android.youtube.player.YouTubePlayerView;
 
-import edu.mdc.entec.north.arttracker.Config;
-import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
+import edu.mdc.entec.north.arttracker.utils.Config;
 import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.R;
-import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 
 public class ArtistFragment extends Fragment
