@@ -175,7 +175,7 @@ public class ImageDownloadFragment extends Fragment {
                 connection.setConnectTimeout(3000);
                 // For this use case, set HTTP method to GET.
                 connection.setRequestMethod("GET");
-                // Already true by default but setting just in case; needs to be true since this request
+                // Already true by default_pic but setting just in case; needs to be true since this request
                 // is carrying an input (response) body.
                 connection.setDoInput(true);
                 // Open communications link (network traffic occurs here).

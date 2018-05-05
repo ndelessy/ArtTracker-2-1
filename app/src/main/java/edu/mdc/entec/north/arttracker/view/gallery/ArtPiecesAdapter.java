@@ -51,11 +51,25 @@ public class ArtPiecesAdapter extends RecyclerView.Adapter<ArtPiecesAdapter.View
         holder.nameTextView.setText(artPiece.getName());
         holder.artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
-        //holder.imageView.setImageResource(artPiece.getPictureID(context));
+
         try {
-            holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
-        } catch(Exception e){
-        Log.e(TAG, e.getMessage());
+            int id = context.getResources().getIdentifier("drawable/"+artPiece.getPictureID(), null, context.getPackageName());
+            if (id != 0) {
+                holder.imageView.setImageResource(id);
+            } else {
+                try {
+                    holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+                } catch (Throwable ex ) {
+                    try {
+                        holder.imageView.setImageResource(R.drawable.default_pic);
+                    } catch (Throwable exc ) {
+                        Log.e(TAG, exc.getMessage());
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        } catch(Throwable e){
+            e.printStackTrace();
         }
 
         holder.checkBox.setTag(artPiece);

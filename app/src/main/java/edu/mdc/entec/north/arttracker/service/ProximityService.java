@@ -17,7 +17,6 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.widget.Toast;
 import android.os.Process;
 
 import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
+import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
 
 import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.SHOWING_ART_PIECE;

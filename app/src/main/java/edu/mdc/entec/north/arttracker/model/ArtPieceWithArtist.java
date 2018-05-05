@@ -26,11 +26,14 @@ public class ArtPieceWithArtist implements Parcelable {
     private String lastName;
     private String details;
     private String youtubeVideoID;
+    private long timestamp;
 
     public ArtPieceWithArtist(int artPieceID, String name, int artistID,
                               int year, String pictureID, String description,
                               double latitude, double longitude, String beaconUUID,
-                              int stars, int ID, String firstName, String lastName, String details, String youtubeVideoID) {
+                              int stars, int ID, String firstName, String lastName, String details, String youtubeVideoID,
+                              long timestamp
+    ) {
         this.artPieceID = artPieceID;
         this.name = name;
         this.artistID = artistID;
@@ -46,6 +49,7 @@ public class ArtPieceWithArtist implements Parcelable {
         this.lastName = lastName;
         this.details = details;
         this.youtubeVideoID = youtubeVideoID;
+        this.timestamp = timestamp;
     }
 
 
@@ -65,6 +69,7 @@ public class ArtPieceWithArtist implements Parcelable {
         lastName = in.readString();
         details = in.readString();
         youtubeVideoID = in.readString();
+        timestamp = in.readLong();
     }
 
     public static final Creator<ArtPieceWithArtist> CREATOR = new Creator<ArtPieceWithArtist>() {
@@ -105,9 +110,10 @@ public class ArtPieceWithArtist implements Parcelable {
         return pictureID;
     }
 
-    public int getPictureID(Context c){
+    /*public int getPictureID(Context c){
         return c.getResources().getIdentifier("drawable/"+pictureID, null, c.getPackageName());
     }
+    */
 
     public String getDescription() {
         return description;
@@ -205,6 +211,14 @@ public class ArtPieceWithArtist implements Parcelable {
         this.youtubeVideoID = youtubeVideoID;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return "ArtPieceWithArtist{" +
@@ -223,6 +237,7 @@ public class ArtPieceWithArtist implements Parcelable {
                 ", lastName='" + lastName + '\'' +
                 ", details='" + details + '\'' +
                 ", youtubeVideoID='" + youtubeVideoID + '\'' +
+                ", timestamp='" + timestamp + '\'' +
                 '}';
     }
 
@@ -248,5 +263,6 @@ public class ArtPieceWithArtist implements Parcelable {
         parcel.writeString(lastName);
         parcel.writeString(details);
         parcel.writeString(youtubeVideoID);
+        parcel.writeLong(timestamp);
     }
 }

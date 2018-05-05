@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.mdc.entec.north.arttracker.R;
+import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.utils.Utils;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 
@@ -46,9 +47,27 @@ public class ArtPiecesByArtistAdapter extends RecyclerView.Adapter<ArtPiecesByAr
         ArtPiece artPiece = artPieces.get(position);
         holder.nameTextView.setText(artPiece.getName());
         holder.yearTextView.setText(Integer.toString(artPiece.getYear()));
-        //holder.imageView.setImageResource(artPiece.getPictureID(context));
-        holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
 
+        try {
+            int id = context.getResources().getIdentifier("drawable/"+artPiece.getPictureID(), null, context.getPackageName());
+            if (id != 0) {
+                holder.imageView.setImageResource(id);
+            } else {
+                try {
+                    holder.imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+                } catch (Throwable ex ) {
+                    try {
+                        holder.imageView.setImageResource(R.drawable.default_pic);
+                    } catch (Throwable exc ) {
+                        Log.e(TAG, exc.getMessage());
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        } catch(Throwable e){
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

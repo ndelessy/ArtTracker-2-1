@@ -85,8 +85,27 @@ public class ArtPieceFragment extends Fragment {
         nameTextView.setText(artPiece.getName());
         artistTextView.setText(artPiece.getFirstName() + " " + artPiece.getLastName());
         yearTextView.setText(Integer.toString(artPiece.getYear()));
-        //imageView.setImageResource(artPiece.getPictureID(context));
-        imageView.setImageBitmap(Utils.loadBitmapFromAssets(getContext(), DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+        try {
+            int id = context.getResources().getIdentifier("drawable/"+artPiece.getPictureID(), null, context.getPackageName());
+            if (id != 0) {
+                imageView.setImageResource(id);
+            } else {
+                try {
+                    imageView.setImageBitmap(Utils.loadBitmapFromAssets(getContext(), DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+                } catch (Throwable ex ) {
+                    try {
+                        imageView.setImageResource(R.drawable.default_pic);
+                    } catch (Throwable exc ) {
+                        Log.e(TAG, exc.getMessage());
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        } catch(Throwable e){
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+
         descriptionTextView.setText(artPiece.getDescription());
 
 
@@ -144,8 +163,6 @@ public class ArtPieceFragment extends Fragment {
         } else {
             videoView.setVisibility(View.GONE);
         }
-
-
 
 
         Log.d("HERE", "videoView.isPlaying() = "+ videoView.isPlaying());

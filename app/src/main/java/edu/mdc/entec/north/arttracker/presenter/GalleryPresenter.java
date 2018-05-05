@@ -2,23 +2,15 @@ package edu.mdc.entec.north.arttracker.presenter;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.mdc.entec.north.arttracker.contract.GalleryContract;
 import edu.mdc.entec.north.arttracker.model.ArtPiece;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
 import edu.mdc.entec.north.arttracker.model.Artist;
-import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
+import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 
 
 public class GalleryPresenter implements GalleryContract.Presenter {

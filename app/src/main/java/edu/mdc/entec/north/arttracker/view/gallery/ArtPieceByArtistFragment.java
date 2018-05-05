@@ -4,6 +4,7 @@ package edu.mdc.entec.north.arttracker.view.gallery;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import static edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment.EXTENS
 
 
 public class ArtPieceByArtistFragment extends Fragment {
+    private static final String TAG = "ArtPieceByArtistFrag";
     private static final String ART_PIECE = "artPiece";
     private ArtPiece artPiece;
     private Context context;
@@ -63,8 +65,27 @@ public class ArtPieceByArtistFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.large_pic4);
         nameTextView.setText(artPiece.getName());
         yearTextView.setText(Integer.toString(artPiece.getYear()));
-        //imageView.setImageResource(artPiece.getPictureID(context));
-        imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+
+        try {
+            int id = context.getResources().getIdentifier("drawable/"+artPiece.getPictureID(), null, context.getPackageName());
+            if (id != 0) {
+                imageView.setImageResource(id);
+            } else {
+                try {
+                    imageView.setImageBitmap(Utils.loadBitmapFromAssets(context, DIRECTORY + "/" + artPiece.getPictureID() + EXTENSION));
+                } catch (Throwable ex ) {
+                    try {
+                        imageView.setImageResource(R.drawable.default_pic);
+                    } catch (Throwable exc ) {
+                        Log.e(TAG, exc.getMessage());
+                        exc.printStackTrace();
+                    }
+                }
+            }
+        } catch(Throwable e){
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
 
         descriptionTextView.setText(artPiece.getDescription());
         return view;

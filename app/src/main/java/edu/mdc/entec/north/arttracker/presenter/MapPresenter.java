@@ -7,7 +7,7 @@ import java.util.List;
 
 import edu.mdc.entec.north.arttracker.contract.MapContract;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
+import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 
 
 public class MapPresenter implements MapContract.Presenter {

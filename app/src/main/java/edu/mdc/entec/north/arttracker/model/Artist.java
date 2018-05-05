@@ -15,13 +15,16 @@ public class Artist implements Parcelable {
     private String lastName;
     private String details;
     private String youtubeVideoID;
+    @NonNull
+    private long timestamp;
 
-    public Artist(int ID, String firstName, String lastName, String details, String youtubeVideoID) {
+    public Artist(int ID, String firstName, String lastName, String details, String youtubeVideoID, long timestamp) {
         this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.details = details;
         this.youtubeVideoID = youtubeVideoID;
+        this.timestamp = timestamp;
     }
 
     protected Artist(Parcel in) {
@@ -30,6 +33,7 @@ public class Artist implements Parcelable {
         lastName = in.readString();
         details = in.readString();
         youtubeVideoID = in.readString();
+        timestamp = in.readLong();
     }
 
     public static final Creator<Artist> CREATOR = new Creator<Artist>() {
@@ -84,6 +88,14 @@ public class Artist implements Parcelable {
         this.youtubeVideoID = youtubeVideoID;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return "Artist{" +
@@ -91,6 +103,7 @@ public class Artist implements Parcelable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", details='" + details + '\'' +
+                ", timestamp='" + timestamp + '\'' +
                 ", youtubeVideoID='" + youtubeVideoID + '\'' +
                 '}';
     }
@@ -107,5 +120,6 @@ public class Artist implements Parcelable {
         parcel.writeString(lastName);
         parcel.writeString(details);
         parcel.writeString(youtubeVideoID);
+        parcel.writeLong(timestamp);
     }
 }

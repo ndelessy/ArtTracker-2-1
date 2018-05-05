@@ -26,21 +26,16 @@ import android.widget.Toast;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 
-import java.util.List;
-
-import edu.mdc.entec.north.arttracker.model.ArtPiece;
-import edu.mdc.entec.north.arttracker.model.Artist;
 import edu.mdc.entec.north.arttracker.model.firestore.FireStoreDB;
 import edu.mdc.entec.north.arttracker.utils.Config;
 import edu.mdc.entec.north.arttracker.service.ProximityService;
 import edu.mdc.entec.north.arttracker.model.ArtPieceWithArtist;
-import edu.mdc.entec.north.arttracker.model.db.AppDatabase;
+import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 import edu.mdc.entec.north.arttracker.R;
 import edu.mdc.entec.north.arttracker.utils.ImageDownloadCallback;
 import edu.mdc.entec.north.arttracker.utils.ImageDownloadFragment;
 import edu.mdc.entec.north.arttracker.view.common.GetNameDialogFragment;
 import edu.mdc.entec.north.arttracker.view.common.SettingsFragment;
-import edu.mdc.entec.north.arttracker.view.gallery.ArtFragmentPagerAdapter;
 import edu.mdc.entec.north.arttracker.view.gallery.ArtistFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 import edu.mdc.entec.north.arttracker.view.map.MapFragment;
@@ -156,9 +151,16 @@ public class MainActivity extends AppCompatActivity
             DialogFragment customFragment = GetNameDialogFragment.newInstance();
             customFragment.show(getSupportFragmentManager(), "custom");
         } else {
-            Toast toast = Toast.makeText(this, "Hello " + savedUsername + "!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
-            toast.show();
+
+            try {
+                Toast toast = Toast.makeText(this, "Hello " + savedUsername + "!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+                toast.show();
+
+            } catch (Exception e){
+                Log.e(TAG, "Error");
+                e.printStackTrace();
+            }
         }
 
 
@@ -261,10 +263,19 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("pref_username", name);
         editor.commit();
-        Toast toast = Toast.makeText(this, "Hello " + name + "!", Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
-        toast.show();
-        Log.d(TAG, "pref_username=" + sharedPref.getString("pref_username", "??????????"));
+
+        try {
+            Toast toast = Toast.makeText(this, "Hello " + name + "!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+            toast.show();
+            Log.d(TAG, "pref_username=" + sharedPref.getString("pref_username", "??????????"));
+
+        } catch (Exception e){
+            Log.e(TAG, "Error");
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

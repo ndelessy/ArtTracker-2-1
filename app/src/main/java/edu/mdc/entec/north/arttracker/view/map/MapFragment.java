@@ -161,9 +161,27 @@ public class MapFragment extends Fragment
                 snippet.setText(marker.getSnippet());
 
                 ImageView imageView = (ImageView) infoWindow.findViewById(R.id.imageView4);
-                imageView.setImageResource( ((ArtPieceWithArtist) marker.getTag()).getPictureID(getContext()));
-                imageView.setImageBitmap(Utils.loadBitmapFromAssets(getContext(), DIRECTORY + "/" + ((ArtPieceWithArtist) marker.getTag()).getPictureID() + EXTENSION));
-
+                try {
+                    ArtPieceWithArtist artPiece = (ArtPieceWithArtist) marker.getTag();
+                    int id = getContext().getResources().getIdentifier("drawable/"+artPiece.getPictureID(), null, getContext().getPackageName());
+                    if (id != 0) {
+                        imageView.setImageResource(id);
+                    } else {
+                        try {
+                            imageView.setImageBitmap(Utils.loadBitmapFromAssets(getContext(), DIRECTORY + "/" + ((ArtPieceWithArtist) marker.getTag()).getPictureID() + EXTENSION));
+                        } catch (Throwable ex ) {
+                            try {
+                                imageView.setImageResource(R.drawable.default_pic);
+                            } catch (Throwable exc ) {
+                                Log.e(TAG, exc.getMessage());
+                                exc.printStackTrace();
+                            }
+                        }
+                    }
+                } catch(Throwable e){
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }
 
 
                 return infoWindow;

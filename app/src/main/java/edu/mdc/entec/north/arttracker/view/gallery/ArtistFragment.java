@@ -4,6 +4,7 @@ package edu.mdc.entec.north.arttracker.view.gallery;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +115,12 @@ public class ArtistFragment extends Fragment
             errorReason.getErrorDialog(getActivity(), YOUTUBE_RECOVERY_REQUEST).show();
         } else {
             String error = String.format(getString(R.string.player_error), errorReason.toString());
-            Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+            try {
+                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+            } catch (Exception e){
+                Log.e(TAG, "Error");
+                e.printStackTrace();
+            }
         }
     }
 

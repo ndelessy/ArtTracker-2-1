@@ -30,12 +30,14 @@ public class ArtPiece  implements Parcelable{
     private int beaconMajor;
     private int beaconMinor;
     private int stars;
+    @NonNull
+    private long timestamp;
 
 
     public ArtPiece(int artPieceID, String name, int artistID, int year, String pictureID, String description,
                     double latitude, double longitude,
                     String beaconUUID, int beaconMajor, int beaconMinor,
-                    int stars) {
+                    int stars, long timestamp) {
         this.artPieceID = artPieceID;
         this.name = name;
         this.artistID = artistID;
@@ -48,6 +50,7 @@ public class ArtPiece  implements Parcelable{
         this.beaconMajor = beaconMajor;
         this.beaconMinor = beaconMinor;
         this.stars = stars;
+        this.timestamp = timestamp;
     }
 
 
@@ -64,6 +67,7 @@ public class ArtPiece  implements Parcelable{
         beaconMajor = in.readInt();
         beaconMinor = in.readInt();
         stars = in.readInt();
+        timestamp = in.readLong();
     }
 
     @Override
@@ -80,6 +84,7 @@ public class ArtPiece  implements Parcelable{
         dest.writeInt(beaconMajor);
         dest.writeInt(beaconMinor);
         dest.writeInt(stars);
+        dest.writeLong(timestamp);
     }
 
     @Override
@@ -205,6 +210,14 @@ public class ArtPiece  implements Parcelable{
         this.stars = stars;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return "ArtPiece{" +
@@ -220,6 +233,7 @@ public class ArtPiece  implements Parcelable{
                 ", beaconMajor=" + beaconMajor +
                 ", beaconMinor=" + beaconMinor +
                 ", stars=" + stars +
+                ", timestamp=" + timestamp +
                 '}';
     }
 }
