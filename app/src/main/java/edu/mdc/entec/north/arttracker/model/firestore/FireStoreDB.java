@@ -35,6 +35,7 @@ public class FireStoreDB {
     private static FirebaseFirestore db;
     private static FireStoreDB INSTANCE;
     private static MainActivity mainActivity;
+    private static List<Artist> artists = new ArrayList<>();
 
     public static FireStoreDB getInstance(MainActivity context){
         mainActivity = context;
@@ -44,7 +45,7 @@ public class FireStoreDB {
         return INSTANCE;
     }
 
-    private FirebaseFirestore getDB(){
+    private static FirebaseFirestore getDB(){
         if(db == null) {
             db = FirebaseFirestore.getInstance();
         }
@@ -52,7 +53,7 @@ public class FireStoreDB {
     }
 
 
-    private ArtPiece getArtPieceFromDocument(QueryDocumentSnapshot document) {
+    private static ArtPiece getArtPieceFromDocument(QueryDocumentSnapshot document) {
         Log.d(TAG, document.getId() + " ==> " + document.getData());
         GeoPoint geoPoint = document.getGeoPoint("coordinates");
         double lat = 0, lon = 0;
@@ -378,184 +379,175 @@ public class FireStoreDB {
 
     public void loadAll(){
         final AppDatabase mDb = AppDatabase.getInstance(mainActivity);
-
-
-        new AsyncTask<Void, Void, List<Artist>>() {
-            @Override
-            protected List<Artist> doInBackground(Void... params) {
-                Log.d(TAG, "doInBackground 1: getting Artists from the web");
-                final List<Artist> artists = new ArrayList<>();
-                getDB().collection("artists")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull final Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "onComplete 1: after getting Artists from the web " );
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        Artist artist = getArtistFromDocument(document);
-                                        artists.add(artist);
-                                    }
-                                    Log.d(TAG, "onComplete 1: after getting Artists from the web gotten " + artists.size());
-                                    ////////////////// 1. updating artists from Room database
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            Log.d(TAG, "doInBackground 2: updating artists in DB");
-                                            for (Artist downloadedArtist: artists) {
-                                                Artist localArtist = mDb.artistModel().loadArtistByID(downloadedArtist.getID());
-                                                if (localArtist == null) { //new artist
-                                                    mDb.artistModel().insertArtist(downloadedArtist);
-                                                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Inserted "+ downloadedArtist.getLastName());
-                                                } else if (localArtist.getTimestamp() < downloadedArtist.getTimestamp()){ //artist has been updated
-                                                    mDb.artistModel().updateArtist(downloadedArtist);
-                                                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Updating "+ downloadedArtist.getLastName());
-                                                } else { //artist is up-to-date
-                                                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Nothing to do with "+ downloadedArtist.getLastName());
-                                                }
-                                            }
-                                            return null;
-                                        }
-
-                                        //////////////////// 2. Now we can get the art pieces
-                                        @Override
-                                        protected void onPostExecute(Void voids) {
-                                            Log.d(TAG, "onPostExecute 2: finished updating artists from DB");
-
-                                            new AsyncTask<List<Artist>, Void, Void>() {
-                                                @Override
-                                                protected Void doInBackground(List<Artist>... lists) {
-                                                    Log.d(TAG, "doInBackground 3: getting ArtPieces from the web");
-
-                                                    getDB().collection("artPieces")
-                                                            .get()
-                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        final List<ArtPiece> artPieces = new ArrayList<>();
-                                                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                            ArtPiece artPiece1 = getArtPieceFromDocument(document);
-                                                                            artPieces.add(artPiece1);
-                                                                        }
-                                                                        /////
-
-                                                                        final ArtPieceDAO artPieceDAO = mDb.artPieceModel();
-
-
-                                                                        new AsyncTask<List<ArtPiece>, Void, String[]>() {
-                                                                            @Override
-                                                                            protected String[] doInBackground(List<ArtPiece>... downloadedArtPieces) {
-                                                                                Log.d(TAG, "doInBackground 4: inserting art pieces into DB");
-                                                                                List<String> pictureIDsToDownload = new ArrayList<>();
-
-                                                                                for (ArtPiece downloadedArtPiece: downloadedArtPieces[0]) {
-                                                                                    ArtPiece localArtPiece = artPieceDAO.loadArtPieceByID(downloadedArtPiece.getArtPieceID());
-                                                                                    if(localArtPiece == null){//new art piece
-                                                                                        try {
-                                                                                            Artist art = mDb.artistModel().loadArtistByID(downloadedArtPiece.getArtistID());
-                                                                                            artPieceDAO.insertArtPiece(downloadedArtPiece);
-                                                                                            mainActivity.insertArtPiece(new ArtPieceWithArtist(downloadedArtPiece, art));
-                                                                                            pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
-                                                                                            Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Inserted " + downloadedArtPiece.getName());
-                                                                                        } catch(SQLiteConstraintException e){
-                                                                                            Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Error while inserting " + downloadedArtPiece.getName());
-                                                                                            e.printStackTrace();
-                                                                                        }
-                                                                                    } else if(localArtPiece.getTimestamp() < downloadedArtPiece.getTimestamp()) { //art piece has been updated
-                                                                                        try {
-                                                                                            artPieceDAO.updateArtPiece(downloadedArtPiece);
-                                                                                            pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
-                                                                                            Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Updated " + downloadedArtPiece.getName());
-                                                                                        }catch(SQLiteConstraintException e){
-                                                                                            Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Error while updating " + downloadedArtPiece.getName());
-                                                                                            e.printStackTrace();
-                                                                                        }
-                                                                                    } else { //art piece  is up-to-date
-                                                                                        Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Nothing to do with "+ downloadedArtPiece.getName());
-                                                                                    }
-
-                                                                                }
-                                                                                List<ArtPiece> localArtPieces = artPieceDAO.findAllArtPiecesSync();
-                                                                                for(ArtPiece localArtPiece: localArtPieces){
-                                                                                    if(!downloadedArtPieces[0].contains(localArtPiece)){
-                                                                                        mDb.artPieceModel().delete(localArtPiece);
-                                                                                    }
-                                                                                }
-                                                                                return pictureIDsToDownload.toArray(new String[pictureIDsToDownload.size()]);
-                                                                            }
-
-                                                                            @Override
-                                                                            protected void onPostExecute(String[] pictureIDs) {
-                                                                                Log.d(TAG, "onPostExecute 4: finished inserting art pieces into DB");
-                                                                                ImageDownloadFragment imageDownloadFragment = ImageDownloadFragment.getInstance(mainActivity.getSupportFragmentManager(), pictureIDs);
-                                                                                if (!mainActivity.mDownloading && imageDownloadFragment != null) {
-                                                                                    mainActivity.mDownloading = true;
-                                                                                }
-
-                                                                                //////////////Testing
-                                                                                new AsyncTask<Void, Void, List<ArtPieceWithArtist>>() {
-                                                                                    @Override
-                                                                                    protected List<ArtPieceWithArtist> doInBackground(Void... params) {
-                                                                                        return mDb.artPieceModel().findAllArtPiecesWithArtistSync();
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    protected void onPostExecute(List<ArtPieceWithArtist> artPieces) {
-                                                                                        for(ArtPieceWithArtist ap: artPieces){
-                                                                                            Log.d(TAG, "Retrieved "+ ap.toString());
-                                                                                        }
-                                                                                    }
-                                                                                }.execute();
-                                                                                ////////////////////
-
-                                                                            }
-                                                                        }.execute(artPieces);
-
-                                                                    } else {
-                                                                        Log.w(TAG, "Error getting documents.", task.getException());
-                                                                    }
-                                                                }
-                                                            });
-
-                                                    return null;
-                                                }
-                                                //////////////////3. Now we can save the ArtPieces
-                                                @Override
-                                                protected void onPostExecute(Void voids) {
-                                                    Log.d(TAG, "onPostExecute 3: finished getting art pieces from the web");
-                                                }
-                                            }.execute(artists);
-
-
-
-
-                                        }
-                                    }.execute();
-                                    //}
-                                } else {
-                                    Log.w(TAG, "Error getting artists documents.", task.getException());
-
-                                }
-                            }
-                        });
-                return artists;
-            }
-            @Override
-            protected void onPostExecute(final List<Artist> artists) {
-                Log.d(TAG, "onPostExecute 1");
-            }
-
-
-
-        }.execute();
-
-
-
-
+        new GetArtistsFromWebAsyncTask().execute();
     }
 
-    private Artist getArtistFromDocument(QueryDocumentSnapshot document) {
+    private static class GetArtistsFromWebAsyncTask extends AsyncTask<Void, Void, List<Artist>> {
+        @Override
+        protected List<Artist> doInBackground(Void... params) {
+            Log.d(TAG, "doInBackground 1: getting Artists from the web");
+            getDB().collection("artists")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull final Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete 1: after getting Artists from the web " );
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Artist artist = FireStoreDB.getArtistFromDocument(document);
+                                    artists.add(artist);
+                                }
+                                Log.d(TAG, "onComplete 1: after getting Artists from the web gotten " + artists.size());
+                                ////////////////// 1. updating artists from Room database
+                                new UpdateArtistsAsyncTask().execute();
+                                //}
+                            } else {
+                                Log.w(TAG, "Error getting artists documents.", task.getException());
+                            }
+                        }
+                    });
+            return artists;
+        }
+        @Override
+        protected void onPostExecute(final List<Artist> artists) {
+            Log.d(TAG, "onPostExecute 1");
+        }
+    }
+
+    private static class UpdateArtistsAsyncTask extends AsyncTask<Void, Void, Void> {
+        AppDatabase mDb = AppDatabase.getInstance(mainActivity);
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d(TAG, "doInBackground 2: updating artists in DB");
+            for (Artist downloadedArtist: artists) {
+                Artist localArtist = mDb.artistModel().loadArtistByID(downloadedArtist.getID());
+                if (localArtist == null) { //new artist
+                    mDb.artistModel().insertArtist(downloadedArtist);
+                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Inserted "+ downloadedArtist.getLastName());
+                } else if (localArtist.getTimestamp() < downloadedArtist.getTimestamp()){ //artist has been updated
+                    mDb.artistModel().updateArtist(downloadedArtist);
+                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Updating "+ downloadedArtist.getLastName());
+                } else { //artist is up-to-date
+                    Log.d(TAG, "doInBackground 2: updating artists in DB:" + " Nothing to do with "+ downloadedArtist.getLastName());
+                }
+            }
+            return null;
+        }
+
+        //////////////////// 2. Now we can get the art pieces
+        @Override
+        protected void onPostExecute(Void voids) {
+            Log.d(TAG, "onPostExecute 2: finished updating artists from DB");
+            new GetArtPiecesFromWebAsyncTask().execute(artists);
+        }
+    }
+
+    private static class GetArtPiecesFromWebAsyncTask extends  AsyncTask<List<Artist>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<Artist>... lists) {
+            Log.d(TAG, "doInBackground 3: getting ArtPieces from the web");
+
+            FireStoreDB.getDB().collection("artPieces")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                final List<ArtPiece> artPieces = new ArrayList<>();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    ArtPiece artPiece1 = FireStoreDB.getArtPieceFromDocument(document);
+                                    artPieces.add(artPiece1);
+                                }
+
+                                new InsertArtPiecesAsyncTask().execute(artPieces);
+
+                            } else {
+                                Log.w(TAG, "Error getting documents.", task.getException());
+                            }
+                        }
+                    });
+
+            return null;
+        }
+        //////////////////3. Now we can save the ArtPieces
+        @Override
+        protected void onPostExecute(Void voids) {
+            Log.d(TAG, "onPostExecute 3: finished getting art pieces from the web");
+        }
+    }
+
+    private static class InsertArtPiecesAsyncTask extends AsyncTask<List<ArtPiece>, Void, String[]> {
+        AppDatabase mDb = AppDatabase.getInstance(mainActivity);
+        final ArtPieceDAO artPieceDAO = mDb.artPieceModel();
+        @Override
+        protected String[] doInBackground(List<ArtPiece>... downloadedArtPieces) {
+            Log.d(TAG, "doInBackground 4: inserting art pieces into DB");
+            List<String> pictureIDsToDownload = new ArrayList<>();
+
+            for (ArtPiece downloadedArtPiece: downloadedArtPieces[0]) {
+                ArtPiece localArtPiece = artPieceDAO.loadArtPieceByID(downloadedArtPiece.getArtPieceID());
+                if(localArtPiece == null){//new art piece
+                    try {
+                        Artist art = mDb.artistModel().loadArtistByID(downloadedArtPiece.getArtistID());
+                        artPieceDAO.insertArtPiece(downloadedArtPiece);
+                        mainActivity.insertArtPiece(new ArtPieceWithArtist(downloadedArtPiece, art));
+                        pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
+                        Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Inserted " + downloadedArtPiece.getName());
+                    } catch(SQLiteConstraintException e){
+                        Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Error while inserting " + downloadedArtPiece.getName());
+                        e.printStackTrace();
+                    }
+                } else if(localArtPiece.getTimestamp() < downloadedArtPiece.getTimestamp()) { //art piece has been updated
+                    try {
+                        artPieceDAO.updateArtPiece(downloadedArtPiece);
+                        pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
+                        Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Updated " + downloadedArtPiece.getName());
+                    }catch(SQLiteConstraintException e){
+                        Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Error while updating " + downloadedArtPiece.getName());
+                        e.printStackTrace();
+                    }
+                } else { //art piece  is up-to-date
+                    Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Nothing to do with "+ downloadedArtPiece.getName());
+                }
+
+            }
+            List<ArtPiece> localArtPieces = artPieceDAO.findAllArtPiecesSync();
+            for(ArtPiece localArtPiece: localArtPieces){
+                if(!downloadedArtPieces[0].contains(localArtPiece)){
+                    mDb.artPieceModel().delete(localArtPiece);
+                }
+            }
+            return pictureIDsToDownload.toArray(new String[pictureIDsToDownload.size()]);
+        }
+
+        @Override
+        protected void onPostExecute(String[] pictureIDs) {
+            Log.d(TAG, "onPostExecute 4: finished inserting art pieces into DB");
+            ImageDownloadFragment imageDownloadFragment = ImageDownloadFragment.getInstance(mainActivity.getSupportFragmentManager(), pictureIDs);
+            if (!mainActivity.mDownloading && imageDownloadFragment != null) {
+                mainActivity.mDownloading = true;
+            }
+
+            new PrintLocalArtPiecesAsyncTask().execute();
+
+        }
+    }
+
+    private static class PrintLocalArtPiecesAsyncTask extends AsyncTask<Void, Void, List<ArtPieceWithArtist>>{
+        @Override
+        protected List<ArtPieceWithArtist> doInBackground(Void... params) {
+            return AppDatabase.getInstance(mainActivity).artPieceModel().findAllArtPiecesWithArtistSync();
+        }
+
+        @Override
+        protected void onPostExecute(List<ArtPieceWithArtist> artPieces) {
+            for(ArtPieceWithArtist ap: artPieces){
+                Log.d(TAG, "Retrieved "+ ap.toString());
+            }
+        }
+    }
+
+    private static Artist getArtistFromDocument(QueryDocumentSnapshot document) {
         Log.d(TAG, document.getId() + " => " + document.getData());
 
         int ID = 0;
