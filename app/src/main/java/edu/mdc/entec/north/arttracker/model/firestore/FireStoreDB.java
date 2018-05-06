@@ -13,10 +13,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,6 @@ import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 import edu.mdc.entec.north.arttracker.model.roomdb.ArtPieceDAO;
 import edu.mdc.entec.north.arttracker.utils.ImageDownloadFragment;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
-import edu.mdc.entec.north.arttracker.view.gallery.ArtPiecesAdapter;
 
 public class FireStoreDB {
     private static final String TAG = ",,FireStoreDB";
@@ -98,10 +99,11 @@ public class FireStoreDB {
         if(beaconUUID == null)
             beaconUUID = "B9407F30-F5F8-466E-AFF9-25556B575555";
 
+
         long timestamp = 0;
-        Long t = document.getLong("timestamp");
-        if(t != null)
-            timestamp = t.longValue();
+        Date date = (Date) document.get("lastChanged");
+        if(date != null)
+            timestamp = date.getTime();
 
         return new ArtPiece(
                 artPieceID,
@@ -195,6 +197,41 @@ public class FireStoreDB {
 
     }
 
+    private static Artist getArtistFromDocument(QueryDocumentSnapshot document) {
+        Log.d(TAG, document.getId() + " => " + document.getData());
+
+        int ID = 0;
+        Long IDD = document.getLong("ID");
+        if(IDD != null)
+            ID = IDD.intValue();
+        String firstName = document.getString("firstName");
+        if(firstName == null)
+            firstName = "";
+        String lastName = document.getString("lastName");
+        if(lastName == null)
+            lastName = "";
+        String details = document.getString("details");
+        if(details == null)
+            details = "";
+        String youtubeVideoID = document.getString("youtubeVideoID");
+        if(youtubeVideoID == null)
+            youtubeVideoID = "";
+
+        long timestamp = 0;
+        Date date = (Date) document.get("lastChanged");
+        if(date != null)
+            timestamp = date.getTime();
+
+        return new Artist(
+                ID,
+                firstName,
+                lastName,
+                details,
+                youtubeVideoID,
+                timestamp
+        );
+    }
+
     private ArtPieceWithArtist getArtPieceWithArtistFromDocument(QueryDocumentSnapshot document) {
 
         Log.d(TAG, document.getId() + " => " + document.getData());
@@ -243,10 +280,12 @@ public class FireStoreDB {
             beaconUUID = "B9407F30-F5F8-466E-AFF9-25556B575555";
 
         Log.d(TAG, "beaconUUID = "+beaconUUID);
+
+
         long timestamp = 0;
-        Long t = document.getLong("timestamp");
-        if(t != null)
-            timestamp = t.longValue();
+        Date date = (Date) document.get("lastChanged");
+        if(date != null)
+            timestamp = date.getTime();
 
 
         return new ArtPieceWithArtist(
@@ -259,6 +298,8 @@ public class FireStoreDB {
                 lat,
                 lon,
                 beaconUUID,
+                beaconMajor,
+                beaconMinor,
                 stars,
                 -1,
                 null,
@@ -459,7 +500,7 @@ public class FireStoreDB {
                                     artPieces.add(artPiece1);
                                 }
 
-                                new InsertArtPiecesAsyncTask().execute(artPieces);
+                                new UpdateArtPiecesAsyncTask().execute(artPieces);
 
                             } else {
                                 Log.w(TAG, "Error getting documents.", task.getException());
@@ -476,13 +517,14 @@ public class FireStoreDB {
         }
     }
 
-    private static class InsertArtPiecesAsyncTask extends AsyncTask<List<ArtPiece>, Void, String[]> {
-        AppDatabase mDb = AppDatabase.getInstance(mainActivity);
-        final ArtPieceDAO artPieceDAO = mDb.artPieceModel();
+    private static class UpdateArtPiecesAsyncTask extends AsyncTask<List<ArtPiece>, Void, String[]> {
+
         @Override
         protected String[] doInBackground(List<ArtPiece>... downloadedArtPieces) {
-            Log.d(TAG, "doInBackground 4: inserting art pieces into DB");
+            Log.d(TAG, "doInBackground 4: updating art pieces into DB");
             List<String> pictureIDsToDownload = new ArrayList<>();
+            AppDatabase mDb = AppDatabase.getInstance(mainActivity);
+            final ArtPieceDAO artPieceDAO = mDb.artPieceModel();
 
             for (ArtPiece downloadedArtPiece: downloadedArtPieces[0]) {
                 ArtPiece localArtPiece = artPieceDAO.loadArtPieceByID(downloadedArtPiece.getArtPieceID());
@@ -498,6 +540,7 @@ public class FireStoreDB {
                         e.printStackTrace();
                     }
                 } else if(localArtPiece.getTimestamp() < downloadedArtPiece.getTimestamp()) { //art piece has been updated
+                    Log.d(TAG, "local timestamp =" + localArtPiece.getTimestamp() + " downloaded timestamp = " + downloadedArtPiece.getTimestamp());
                     try {
                         artPieceDAO.updateArtPiece(downloadedArtPiece);
                         pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
@@ -507,13 +550,22 @@ public class FireStoreDB {
                         e.printStackTrace();
                     }
                 } else { //art piece  is up-to-date
+                    Log.d(TAG, "local timestamp =" + localArtPiece.getTimestamp() + " downloaded timestamp = " + downloadedArtPiece.getTimestamp());
                     Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Nothing to do with "+ downloadedArtPiece.getName());
                 }
 
             }
             List<ArtPiece> localArtPieces = artPieceDAO.findAllArtPiecesSync();
             for(ArtPiece localArtPiece: localArtPieces){
-                if(!downloadedArtPieces[0].contains(localArtPiece)){
+                boolean found = false;
+                for(ArtPiece downloadedArtPiece: downloadedArtPieces[0]) {
+                    if (localArtPiece.getArtPieceID() == downloadedArtPiece.getArtPieceID()) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found){
+                    Log.d(TAG, "deleting " + localArtPiece.getName());
                     mDb.artPieceModel().delete(localArtPiece);
                 }
             }
@@ -522,7 +574,7 @@ public class FireStoreDB {
 
         @Override
         protected void onPostExecute(String[] pictureIDs) {
-            Log.d(TAG, "onPostExecute 4: finished inserting art pieces into DB");
+            Log.d(TAG, "onPostExecute 4: finished updating art pieces into DB");
             ImageDownloadFragment imageDownloadFragment = ImageDownloadFragment.getInstance(mainActivity.getSupportFragmentManager(), pictureIDs);
             if (!mainActivity.mDownloading && imageDownloadFragment != null) {
                 mainActivity.mDownloading = true;
@@ -547,40 +599,6 @@ public class FireStoreDB {
         }
     }
 
-    private static Artist getArtistFromDocument(QueryDocumentSnapshot document) {
-        Log.d(TAG, document.getId() + " => " + document.getData());
-
-        int ID = 0;
-        Long IDD = document.getLong("ID");
-        if(IDD != null)
-            ID = IDD.intValue();
-        String firstName = document.getString("firstName");
-        if(firstName == null)
-            firstName = "";
-        String lastName = document.getString("lastName");
-        if(lastName == null)
-            lastName = "";
-        String details = document.getString("details");
-        if(details == null)
-            details = "";
-        String youtubeVideoID = document.getString("youtubeVideoID");
-        if(youtubeVideoID == null)
-            youtubeVideoID = "";
-
-        long timestamp = 0;
-        Long t = document.getLong("timestamp");
-        if(t != null)
-            timestamp = t.longValue();
-
-        return new Artist(
-                ID,
-                firstName,
-                lastName,
-                details,
-                youtubeVideoID,
-                timestamp
-        );
-    }
 
     public Artist loadArtistByID(int ID){
         final Artist[] artist = {null};

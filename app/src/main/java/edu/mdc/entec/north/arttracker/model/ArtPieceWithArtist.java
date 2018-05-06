@@ -19,6 +19,8 @@ public class ArtPieceWithArtist implements Parcelable {
     private double latitude;
     private double longitude;
     private String beaconUUID;
+    private int beaconMinor;
+    private int beaconMajor;
     private int stars;
 
     private int ID;
@@ -30,7 +32,7 @@ public class ArtPieceWithArtist implements Parcelable {
 
     public ArtPieceWithArtist(int artPieceID, String name, int artistID,
                               int year, String pictureID, String description,
-                              double latitude, double longitude, String beaconUUID,
+                              double latitude, double longitude, String beaconUUID, int beaconMajor, int beaconMinor,
                               int stars, int ID, String firstName, String lastName, String details, String youtubeVideoID,
                               long timestamp
     ) {
@@ -43,6 +45,8 @@ public class ArtPieceWithArtist implements Parcelable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.beaconUUID = beaconUUID;
+        this.beaconMajor = beaconMajor;
+        this.beaconMinor = beaconMinor;
         this.stars = stars;
         this.ID = ID;
         this.firstName = firstName;
@@ -61,6 +65,8 @@ public class ArtPieceWithArtist implements Parcelable {
         this.latitude = artPiece.getLatitude();
         this.longitude = artPiece.getLongitude();
         this.beaconUUID = artPiece.getBeaconUUID();
+        this.beaconMinor = artPiece.getBeaconMinor();
+        this.beaconMajor = artPiece.getBeaconMajor();
         this.stars = artPiece.getStars();
         this.ID = artist.getID();
         this.firstName = artist.getFirstName();
@@ -81,6 +87,8 @@ public class ArtPieceWithArtist implements Parcelable {
         latitude = in.readDouble();
         longitude = in.readDouble();
         beaconUUID = in.readString();
+        beaconMajor = in.readInt();
+        beaconMinor = in.readInt();
         stars = in.readInt();
         ID = in.readInt();
         firstName = in.readString();
@@ -213,6 +221,22 @@ public class ArtPieceWithArtist implements Parcelable {
         this.beaconUUID = beaconUUID;
     }
 
+    public int getBeaconMinor() {
+        return beaconMinor;
+    }
+
+    public void setBeaconMinor(int beaconMinor) {
+        this.beaconMinor = beaconMinor;
+    }
+
+    public int getBeaconMajor() {
+        return beaconMajor;
+    }
+
+    public void setBeaconMajor(int beaconMajor) {
+        this.beaconMajor = beaconMajor;
+    }
+
     public int getStars() {
         return stars;
     }
@@ -249,6 +273,8 @@ public class ArtPieceWithArtist implements Parcelable {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", beaconUUID='" + beaconUUID + '\'' +
+                ", beaconMinor='" + beaconMinor + '\'' +
+                ", beaconMajor='" + beaconMajor + '\'' +
                 ", stars=" + stars +
                 ", ID=" + ID +
                 ", firstName='" + firstName + '\'' +
@@ -275,6 +301,8 @@ public class ArtPieceWithArtist implements Parcelable {
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
         parcel.writeString(beaconUUID);
+        parcel.writeInt(beaconMajor);
+        parcel.writeInt(beaconMinor);
         parcel.writeInt(stars);
         parcel.writeInt(ID);
         parcel.writeString(firstName);
