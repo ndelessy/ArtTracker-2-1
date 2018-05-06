@@ -92,6 +92,9 @@ public class ArtPiecesFragment extends Fragment  {
         getAdapter().notifyDataSetChanged();
     }
 
+    public void addArtPiece(ArtPieceWithArtist artPieceWithArtist){
+        artPieces.add(artPieceWithArtist);
+    }
 
     public interface OnArtPieceSelectedListener {
         void onArtPieceSelected(ArtPieceWithArtist artPieceWithArtist);

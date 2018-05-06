@@ -51,6 +51,24 @@ public class ArtPieceWithArtist implements Parcelable {
         this.youtubeVideoID = youtubeVideoID;
         this.timestamp = timestamp;
     }
+    public ArtPieceWithArtist(ArtPiece artPiece, Artist artist){
+        this.artPieceID = artPiece.getArtPieceID();
+        this.name = artPiece.getName();
+        this.artistID = artPiece.getArtistID();
+        this.year = artPiece.getYear();
+        this.pictureID = artPiece.getPictureID();
+        this.description = artPiece.getDescription();
+        this.latitude = artPiece.getLatitude();
+        this.longitude = artPiece.getLongitude();
+        this.beaconUUID = artPiece.getBeaconUUID();
+        this.stars = artPiece.getStars();
+        this.ID = artist.getID();
+        this.firstName = artist.getFirstName();
+        this.lastName = artist.getLastName();
+        this.details = artist.getDetails();
+        this.youtubeVideoID = artist.getYoutubeVideoID();
+        this.timestamp = artPiece.getTimestamp();
+    }
 
 
     protected ArtPieceWithArtist(Parcel in) {

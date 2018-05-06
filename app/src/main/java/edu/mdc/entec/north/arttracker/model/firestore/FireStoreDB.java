@@ -28,6 +28,7 @@ import edu.mdc.entec.north.arttracker.model.roomdb.AppDatabase;
 import edu.mdc.entec.north.arttracker.model.roomdb.ArtPieceDAO;
 import edu.mdc.entec.north.arttracker.utils.ImageDownloadFragment;
 import edu.mdc.entec.north.arttracker.view.MainActivity;
+import edu.mdc.entec.north.arttracker.view.gallery.ArtPiecesAdapter;
 
 public class FireStoreDB {
     private static final String TAG = ",,FireStoreDB";
@@ -378,6 +379,7 @@ public class FireStoreDB {
     public void loadAll(){
         final AppDatabase mDb = AppDatabase.getInstance(mainActivity);
 
+
         new AsyncTask<Void, Void, List<Artist>>() {
             @Override
             protected List<Artist> doInBackground(Void... params) {
@@ -440,16 +442,20 @@ public class FireStoreDB {
 
                                                                         final ArtPieceDAO artPieceDAO = mDb.artPieceModel();
 
+
                                                                         new AsyncTask<List<ArtPiece>, Void, String[]>() {
                                                                             @Override
-                                                                            protected String[] doInBackground(List<ArtPiece>... artPieces) {
+                                                                            protected String[] doInBackground(List<ArtPiece>... downloadedArtPieces) {
                                                                                 Log.d(TAG, "doInBackground 4: inserting art pieces into DB");
                                                                                 List<String> pictureIDsToDownload = new ArrayList<>();
-                                                                                for (ArtPiece downloadedArtPiece: artPieces[0]) {
+
+                                                                                for (ArtPiece downloadedArtPiece: downloadedArtPieces[0]) {
                                                                                     ArtPiece localArtPiece = artPieceDAO.loadArtPieceByID(downloadedArtPiece.getArtPieceID());
                                                                                     if(localArtPiece == null){//new art piece
                                                                                         try {
+                                                                                            Artist art = mDb.artistModel().loadArtistByID(downloadedArtPiece.getArtistID());
                                                                                             artPieceDAO.insertArtPiece(downloadedArtPiece);
+                                                                                            mainActivity.insertArtPiece(new ArtPieceWithArtist(downloadedArtPiece, art));
                                                                                             pictureIDsToDownload.add(downloadedArtPiece.getPictureID());
                                                                                             Log.d(TAG, "doInBackground 4: updating art piece in DB:" + " Inserted " + downloadedArtPiece.getName());
                                                                                         } catch(SQLiteConstraintException e){
@@ -470,6 +476,12 @@ public class FireStoreDB {
                                                                                     }
 
                                                                                 }
+                                                                                List<ArtPiece> localArtPieces = artPieceDAO.findAllArtPiecesSync();
+                                                                                for(ArtPiece localArtPiece: localArtPieces){
+                                                                                    if(!downloadedArtPieces[0].contains(localArtPiece)){
+                                                                                        mDb.artPieceModel().delete(localArtPiece);
+                                                                                    }
+                                                                                }
                                                                                 return pictureIDsToDownload.toArray(new String[pictureIDsToDownload.size()]);
                                                                             }
 
@@ -480,6 +492,7 @@ public class FireStoreDB {
                                                                                 if (!mainActivity.mDownloading && imageDownloadFragment != null) {
                                                                                     mainActivity.mDownloading = true;
                                                                                 }
+
                                                                                 //////////////Testing
                                                                                 new AsyncTask<Void, Void, List<ArtPieceWithArtist>>() {
                                                                                     @Override

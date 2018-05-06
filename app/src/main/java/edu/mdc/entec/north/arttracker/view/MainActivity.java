@@ -36,6 +36,8 @@ import edu.mdc.entec.north.arttracker.utils.ImageDownloadCallback;
 import edu.mdc.entec.north.arttracker.utils.ImageDownloadFragment;
 import edu.mdc.entec.north.arttracker.view.common.GetNameDialogFragment;
 import edu.mdc.entec.north.arttracker.view.common.SettingsFragment;
+import edu.mdc.entec.north.arttracker.view.gallery.ArtPiecesAdapter;
+import edu.mdc.entec.north.arttracker.view.gallery.ArtPiecesFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.ArtistFragment;
 import edu.mdc.entec.north.arttracker.view.gallery.GalleryFragment;
 import edu.mdc.entec.north.arttracker.view.map.MapFragment;
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity
             ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
                 if (!ProximityService.class.getName().equals(service.service.getClassName())) {
-                    SystemRequirementsChecker.checkWithDefaultDialogs(this);
+                    //SystemRequirementsChecker.checkWithDefaultDialogs(this);
                     Intent intent = new Intent(this, ProximityService.class);
                     startService(intent);
                 }
@@ -321,8 +323,26 @@ public class MainActivity extends AppCompatActivity
         return networkInfo;
     }
 
+    public void insertArtPiece(final ArtPieceWithArtist artPieceWithArtist){
+        runOnUiThread(new Runnable() {
+            public void run() {
+                ArtPiecesFragment artPiecesFragment = (ArtPiecesFragment) ((GalleryFragment) adapter.getItem(0)).getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+                if(artPiecesFragment != null) {
+                    artPiecesFragment.addArtPiece(artPieceWithArtist);
+                }
+            }
+        });
+
+    }
+
     @Override
     public void finishDownloading() {
+
+        ArtPiecesFragment artPiecesFragment = (ArtPiecesFragment) ((GalleryFragment) adapter.getItem(0)).getChildFragmentManager().findFragmentByTag("artPiecesFragment");
+        if(artPiecesFragment != null) {
+            artPiecesFragment.getAdapter().notifyDataSetChanged();
+        }
+
         mDownloading = false;
         if (imageDownloadFragment != null) {
             imageDownloadFragment.cancelDownload();
