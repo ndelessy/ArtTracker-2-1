@@ -6,9 +6,10 @@ android {
         applicationId "edu.mdc.entec.north.arttracker"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.16"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -43,6 +44,7 @@ dependencies {
     implementation 'com.estimote:sdk:1.4.1'
 
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    implementation 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

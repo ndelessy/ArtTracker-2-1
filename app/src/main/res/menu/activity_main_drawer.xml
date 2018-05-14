@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+
+        <item
+            android:id="@+id/share2"
+            android:icon="@drawable/ic_action_share2"
+            android:title="Share this app" />
+        <item
+            android:id="@+id/settings2"
+            android:icon="@drawable/ic_action_settings2"
+            android:title="Settings" />
+    </group>
+
+
+</menu>

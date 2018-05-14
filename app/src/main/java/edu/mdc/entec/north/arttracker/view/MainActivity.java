@@ -8,11 +8,14 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -21,6 +24,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -56,6 +60,9 @@ public class MainActivity extends AppCompatActivity
     private ArtFragmentPagerAdapter adapter;
     private SharedPreferences sharedPref;
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+
     private ArtPieceWithArtist artPiece;
     private int showing;
     private boolean showingList;
@@ -86,6 +93,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         setUpTabsLayout();
+
+        setUpDrawerLayout();
 
         sayHelloToUser();
 
@@ -143,6 +152,101 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    private void setUpDrawerLayout() {
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        // Adding menu icon and icon to Toolbar
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setIcon(R.mipmap.ic_launcher);
+
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+
+        //Initializing NavigationView
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+
+                //Checking if the item is in checked state or not, if not make it in checked state
+                if(menuItem.isChecked()) menuItem.setChecked(false);
+                else menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                drawerLayout.closeDrawers();
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()){
+                    //Replacing the main content with ContentFragment Which is  View;
+                    case R.id.share2:
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is a great app you should try!\n https://play.google.com/store/apps/details?id=edu.mdc.entec.north.arttracker");
+                        sendIntent.setType("text/plain");
+                        startActivity(Intent.createChooser(sendIntent, "Share this app using: "));
+
+
+
+
+
+
+                        return true;
+                    case R.id.settings2:
+                        if(!settingsIsOpen) {
+                            f = new SettingsFragment();
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.outer, f)
+                                    .commit();
+                        } else {
+                            getSupportFragmentManager().beginTransaction()
+                                    .remove(f)
+                                    .commit();
+                        }
+                        settingsIsOpen = !settingsIsOpen;
+                        return true;
+                    default:
+                        Log.d(TAG, "?? ");
+                        return true;
+                }
+            }
+        });
+
+        // Initializing Drawer Layout and ActionBarToggle
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,
+                drawerLayout,myToolbar,R.string.openDrawer, R.string.closeDrawer){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes
+                // as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as
+                // we dont want anything to happen so we leave this blank
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        //Setting the actionbarToggle to drawer layout
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessary or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
+    }
+
 
 
     private void sayHelloToUser() {
