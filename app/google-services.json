@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "378011669377",
+    "firebase_url": "https://arttracker-2d914.firebaseio.com",
+    "project_id": "arttracker-2d914",
+    "storage_bucket": "arttracker-2d914.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378011669377:android:3077d7aa05bb680d",
+        "android_client_info": {
+          "package_name": "edu.mdc.entec.north.arttracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "378011669377-lbfnp09h127257m8pn8p1dd50tajprr5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAf-hVgFKI6KjfDT-4Ycuvwc4BEvoaCD4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
